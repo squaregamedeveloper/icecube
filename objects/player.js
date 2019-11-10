@@ -1,4 +1,10 @@
-class Player {
+import Bullet from "./bullet.js";
+import {generateID} from "./utils.js";
+
+const g = 9.8 / 16;
+
+
+export default class Player {
   x = 150;
   y = 200;
   size = 50;
@@ -15,28 +21,28 @@ class Player {
   jumpTimeout = null;
   lastControls = {};
 
-  constructor(id, x, y){
+  constructor(id, x, y) {
     this.id = id;
     this.x = x;
     this.y = y;
   }
 
-  draw = () => {
+  draw = (ctx) => {
     ctx.beginPath();
     ctx.fillStyle = "blue";
     ctx.fillRect(this.x, this.y, this.size, this.size);
-    this.drawEyes();
+    this.drawEyes(ctx);
     ctx.stroke();
   };
 
-  drawEyes = () => {
+  drawEyes = (ctx) => {
     ctx.fillStyle = "red";
     ctx.fillRect(this.x + this.eyes.x, this.y + this.eyes.y, this.eyes.size, this.eyes.size);
     ctx.fillRect(this.x + this.eyes.x + this.eyes.size + this.eyes.margin, this.y + this.eyes.y, this.eyes.size, this.eyes.size);
   };
 
 
-  update = (controls, world) => {
+  update = (controls, world, mousePosition) => {
     if (controls.left) this.velocity.x = -this.speed.x;
     else if (controls.right) this.velocity.x = this.speed.x;
     else {
@@ -81,10 +87,9 @@ class Player {
     if (this.isOnGround) {
       this.velocity.y = 0;
       if (controls.up) this.velocity.y = this.speed.y;
-    }
-    else if (this.isOnWall) {
+    } else if (this.isOnWall) {
       if ((/*!this.lastControls.up &&*/ controls.up && controls.left && !controls.right && this.wallDir === "right") ||
-      (/*!this.lastControls.up && */controls.up && controls.right && !controls.left && this.wallDir === "left")) {
+        (/*!this.lastControls.up && */controls.up && controls.right && !controls.left && this.wallDir === "left")) {
         this.velocity.y = this.speed.y;
         this.isOnWall = false;
       }
@@ -92,8 +97,10 @@ class Player {
     this.fireTimer += 1;
     if (controls.shoot && this.fireTimer >= this.fireInterval) {
       this.fireTimer = 0;
-      let dir = {x: (mousePosition.x - (this.x + (this.size / 2)) + (Bullet.size / 2)),
-        y: (mousePosition.y - (this.y + (this.size / 2) + (Bullet.size / 2)))};
+      let dir = {
+        x: (mousePosition.x - (this.x + (this.size / 2)) + (Bullet.size / 2)),
+        y: (mousePosition.y - (this.y + (this.size / 2) + (Bullet.size / 2)))
+      };
       let mouseDistance = Math.hypot(dir.x, dir.y);
       dir.x /= mouseDistance;
       dir.y /= mouseDistance;
@@ -106,11 +113,11 @@ class Player {
     this.x = nextPositionX.x;
     this.y = nextPositionY.y;
 
-    this.updateEyes();
+    this.updateEyes(mousePosition);
     this.lastControls = controls.getControls()
   };
 
-  updateEyes = () => {
+  updateEyes = (mousePosition) => {
     let eyeX, eyeY;
     let y = mousePosition.y - this.eyes.size;
 

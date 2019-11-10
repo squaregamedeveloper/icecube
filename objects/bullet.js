@@ -1,4 +1,4 @@
-class Bullet {
+export default class Bullet {
   x = 0;
   y = 0;
   rotationSpeed = 20;
@@ -12,7 +12,7 @@ class Bullet {
     this.speed = speed;
   }
 
-  draw = () => {
+  draw = (ctx) => {
     ctx.save();
     ctx.beginPath();
     // move the rotation point to the center of the rect

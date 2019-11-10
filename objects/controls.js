@@ -1,4 +1,4 @@
-class Controls {
+export default class Controls {
   leftKeyCodes = [65, 97, 37];
   rightKeyCodes = [68, 100, 39];
   upKeyCodes = [87, 119, 38];

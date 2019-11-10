@@ -1,4 +1,4 @@
-class Wall {
+export default class Wall {
   constructor(id, x, y, width, height, color = "blue") {
     this.id = id;
     this.x = x;
@@ -8,7 +8,7 @@ class Wall {
     this.color = color;
   }
 
-  draw = () => {
+  draw = (ctx) => {
     ctx.fillStyle = this.color;
     ctx.fillRect(this.x, this.y, this.width, this.height);
   };
@@ -22,13 +22,12 @@ class Wall {
     };
 
     //Check for intersection:
-    if(this.x < x + width && x < this.x + this.width && this.y < y + height && y < this.y + this.height){
-      if(this.x > x) pos["left"] = true;
-      if(this.x + this.width < x + width ) pos["right"] = true;
-      if(this.y > y) pos["top"] = true;
-      if(this.y + this.height < y + height) pos["bottom"] = true;
+    if (this.x < x + width && x < this.x + this.width && this.y < y + height && y < this.y + this.height) {
+      if (this.x > x) pos["left"] = true;
+      if (this.x + this.width < x + width) pos["right"] = true;
+      if (this.y > y) pos["top"] = true;
+      if (this.y + this.height < y + height) pos["bottom"] = true;
       return pos;
-    }
-    else return null;
+    } else return null;
   }
 }

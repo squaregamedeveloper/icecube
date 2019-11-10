@@ -1,9 +1,8 @@
-
-let generateID = () => {
+export let generateID = () => {
   return '_' + Math.random().toString(36).substr(2, 9);
 };
 
-function createGradient(x0, y0, x1, y1) {
+export function createGradient(ctx, x0, y0, x1, y1) {
   let grd = ctx.createLinearGradient(x0, y0, x1, y1);
 
   // Add colors
@@ -15,3 +14,4 @@ function createGradient(x0, y0, x1, y1) {
   grd.addColorStop(1, '#9ed8f0');
   return grd;
 }
+

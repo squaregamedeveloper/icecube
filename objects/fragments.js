@@ -1,4 +1,4 @@
-class FragmentCluster {
+export default class FragmentCluster {
   frags = [];
   maxSize = 6;
   speed = 5;
@@ -12,8 +12,7 @@ class FragmentCluster {
       if (intersectionDirections.bottom || intersectionDirections.top) {
         speed.x = this.randomInRange(-this.speed, this.speed);
         speed.y = (intersectionDirections.bottom) ? this.randomInRange(0, this.speed) : this.randomInRange(-this.speed, 0);
-      }
-      else if (intersectionDirections.right || intersectionDirections.left) {
+      } else if (intersectionDirections.right || intersectionDirections.left) {
         speed.y = this.randomInRange(-this.speed, this.speed);
         speed.x = (intersectionDirections.right) ? this.randomInRange(0, this.speed) : this.randomInRange(-this.speed, 0);
       }
@@ -44,7 +43,7 @@ class FragmentCluster {
 
   isFinished = () => (this.alpha <= 20);
 
-  draw = () => {
+  draw = (ctx) => {
     for (let f of this.frags) {
       ctx.save();
       ctx.beginPath();
