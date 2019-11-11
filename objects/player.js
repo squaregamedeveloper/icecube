@@ -5,21 +5,24 @@ const g = 9.8 / 16;
 
 
 export default class Player {
+  bulletSpeed = 15;
+  fireInterval = 10;
+  friction = 0.9;
+  size = 50;
+  speed = {x: 7, y: -15};
+  jumpTimeout = null;
+
   x = 150;
   y = 200;
-  size = 50;
   eyes = {x: 10, y: 10, size: 10, margin: 5};
   velocity = {x: 0, y: 0};
-  speed = {x: 7, y: -15};
-  friction = 0.9;
   isOnGround = false;
   isOnWall = false;
   wallDir = null;
-  bulletSpeed = 15;
-  fireInterval = 10;
   fireTimer = 0;
-  jumpTimeout = null;
   lastControls = {};
+  controls = {};
+  mousePosition = {};
 
   constructor(id, x, y) {
     this.id = id;
@@ -41,10 +44,17 @@ export default class Player {
     ctx.fillRect(this.x + this.eyes.x + this.eyes.size + this.eyes.margin, this.y + this.eyes.y, this.eyes.size, this.eyes.size);
   };
 
+  updateControls = (controls) => {
+    this.controls = controls;
+  };
 
-  update = (controls, world, mousePosition) => {
-    if (controls.left) this.velocity.x = -this.speed.x;
-    else if (controls.right) this.velocity.x = this.speed.x;
+  updateMousePosition = (mousePosition) => {
+    this.mousePosition = mousePosition;
+  };
+
+  update = (world) => {
+    if (this.controls.left) this.velocity.x = -this.speed.x;
+    else if (this.controls.right) this.velocity.x = this.speed.x;
     else {
       this.velocity.x *= this.friction;
     }
@@ -73,7 +83,7 @@ export default class Player {
       clearTimeout(this.jumpTimeout);
       this.jumpTimeout = setTimeout(() => {
         this.isOnWall = false;
-      }, 300);
+      }, 200);
     }
     if (intersectsY) {
       if (this.velocity.y > 0) {
@@ -86,20 +96,20 @@ export default class Player {
 
     if (this.isOnGround) {
       this.velocity.y = 0;
-      if (controls.up) this.velocity.y = this.speed.y;
+      if (this.controls.up) this.velocity.y = this.speed.y;
     } else if (this.isOnWall) {
-      if ((/*!this.lastControls.up &&*/ controls.up && controls.left && !controls.right && this.wallDir === "right") ||
-        (/*!this.lastControls.up && */controls.up && controls.right && !controls.left && this.wallDir === "left")) {
+      if ((/*!this.lastthis.controls.up &&*/ this.controls.up && this.controls.left && !this.controls.right && this.wallDir === "right") ||
+        (/*!this.lastthis.controls.up && */this.controls.up && this.controls.right && !this.controls.left && this.wallDir === "left")) {
         this.velocity.y = this.speed.y;
         this.isOnWall = false;
       }
     }
     this.fireTimer += 1;
-    if (controls.shoot && this.fireTimer >= this.fireInterval) {
+    if (this.controls.shoot && this.fireTimer >= this.fireInterval) {
       this.fireTimer = 0;
       let dir = {
-        x: (mousePosition.x - (this.x + (this.size / 2)) + (Bullet.size / 2)),
-        y: (mousePosition.y - (this.y + (this.size / 2) + (Bullet.size / 2)))
+        x: (this.mousePosition.x - (this.x + (this.size / 2)) + (Bullet.size / 2)),
+        y: (this.mousePosition.y - (this.y + (this.size / 2) + (Bullet.size / 2)))
       };
       let mouseDistance = Math.hypot(dir.x, dir.y);
       dir.x /= mouseDistance;
@@ -113,8 +123,8 @@ export default class Player {
     this.x = nextPositionX.x;
     this.y = nextPositionY.y;
 
-    this.updateEyes(mousePosition);
-    this.lastControls = controls.getControls()
+    this.updateEyes(this.mousePosition);
+    this.lastcontrols = this.controls;
   };
 
   updateEyes = (mousePosition) => {
@@ -134,5 +144,31 @@ export default class Player {
 
     this.eyes.x += (eyeX - (this.x + this.eyes.x)) * 0.3;
     this.eyes.y += (eyeY - (this.y + this.eyes.y)) * 0.3;
+  };
+
+  serialize = () => {
+    let res = {};
+    res.id = this.id;
+    res.x = this.x;
+    res.y = this.y;
+    res.velocity = this.velocity;
+    res.eyes = this.eyes;
+    res.isOnGround = this.isOnGround;
+    res.isOnWall = this.isOnWall;
+    res.wallDir = this.wallDir;
+    res.fireTimer = this.fireTimer;
+    return res;
+  };
+
+  updateState = (state) => {
+    this.id = state.id;
+    this.x = state.x;
+    this.y = state.y;
+    this.velocity = state.velocity;
+    this.eyes = state.eyes;
+    this.isOnGround = state.isOnGround;
+    this.isOnWall = state.isOnWall;
+    this.wallDir = state.wallDir;
+    this.fireTimer = state.fireTimer;
   }
-}
+};

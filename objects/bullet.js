@@ -30,6 +30,15 @@ export default class Bullet {
     this.y += this.speed.y;
     this.rotation += this.rotationSpeed;
   };
+
+  serialize = () => {
+    let res = {};
+    res.id = this.id;
+    res.x = this.x;
+    res.y = this.y;
+    res.speed = this.speed;
+    return res;
+  };
 }
 
 Bullet.size = 15;

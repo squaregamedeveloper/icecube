@@ -51,7 +51,8 @@ let initialState = {
   },
 };
 
-let world = new World(initialState);
+//let world = new World(initialState);
+let world;
 
 function handleCanvas() {
   c.setAttribute('width', document.body.clientWidth); //max width
@@ -63,9 +64,40 @@ function handleCanvas() {
   ctx.clearRect(0, 0, c.width, c.height);
 }
 
+//Connecting To socket.io
+
+var socket = io.connect(window.location.host);
+socket.on("connectToRoom", (data) => {
+  //alert(JSON.stringify(data));
+  player1_id = socket.id;
+  world = new World(data);
+  window.requestAnimationFrame(loop);
+});
+
+socket.on('updateState', (data) => {
+  world.updateState(data);
+});
+
+
+let old_controls = {};
+let mouseRefreshRate = 100;
+
 function loop(a) {
+  // Update server with the controls:
+  let new_controls = controls.serialize();
+  if (JSON.stringify(old_controls) !== JSON.stringify(new_controls)) {
+    socket.emit("updateControls", new_controls);
+    old_controls = new_controls;
+  }
+  setTimeout(() => {
+    socket.emit("updateMouse", mousePosition);
+  }, mouseRefreshRate);
+  // Update server with the mouse position:
+
+  world.updatePlayerControls(player1_id, controls);
+  world.updatePlayerMouse(player1_id, mousePosition);
   // Update
-  world.update(controls, mousePosition);
+  world.update();
 
   // Draw
   handleCanvas();
@@ -79,16 +111,3 @@ function loop(a) {
   ctx.fillStyle = 'black';
   ctx.fillText(`${JSON.stringify(mousePosition)}`, 20, 30)
 }
-
-window.requestAnimationFrame(loop);
-
-//Connecting To socket.io
-
-var socket = io.connect(window.location.host);
-socket.on("connectToRoom", function (data) {
-  alert(data);
-});
-
-//});
-
-

@@ -22,4 +22,14 @@ export default class Controls {
   keyUp = (e) => this.update(e, false);
   mouseDown = () => this.update({"click": true}, true);
   mouseUp = () => this.update({"click": true}, false);
+
+  serialize = () => {
+    let res = {};
+    res.right = this.right;
+    res.down = this.down;
+    res.left = this.left;
+    res.up = this.up;
+    res.shoot = this.shoot;
+    return res;
+  }
 }

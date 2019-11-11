@@ -1,3 +1,5 @@
+import Room from "./server-objects/room";
+
 require("babel-core").transform("code", {});
 const path = require('path');
 const express = require('express');
@@ -7,7 +9,6 @@ const io = require('socket.io')(server, {
   pingInterval: 4000,
   pingTimeout: 4000,
 });
-const Room = require('./server-objects/room');
 
 // Define middlewares:
 app.use('/assets', express.static(__dirname + '/assets'));
@@ -35,14 +36,28 @@ io.on('connection', function (socket) {
     roomName = "room-" + roomnumber;
     rooms[roomName] = new Room(roomName, io);
   }
-  socket.join(roomName);
+  console.log(`Player ${socket.id} connected from room ${roomName}`);
+  rooms[roomName].join(socket);
 
-  socket.on('disconnect', () => {
-    console.log("DISCONNECTED")
-  });
+
+  ((room, socket) => {
+    socket.on('updateControls', (controls) => {
+      room.updateUserControls(socket.id, controls);
+    });
+
+    socket.on('updateMouse', (mousePosition) => {
+      room.updateUserMouse(socket.id, mousePosition);
+    });
+    socket.on('disconnect', () => {
+      console.log(`Player ${socket.id} disconnected from room ${room.id}`);
+      room.kick(socket);
+    });
+  })(rooms[roomName], socket);
+
 
   //Send this event to everyone in the room.
-  io.sockets.in(roomName).emit('connectToRoom', "You are in room no. " + roomnumber);
+  io.sockets.in(roomName).emit('connectToRoom', rooms[roomName].world.serialize(true));
+  console.table(rooms)
 });
 
 server.listen(3000);

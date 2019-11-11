@@ -1,14 +1,11 @@
 import World from "../objects/world";
+import {generateID} from "../objects/utils";
+import Player from "../objects/player";
 
 let baseWidth = 1853;
 let baseHeight = 951;
 let initialState = {
-  players: {
-    player1_id: {
-      x: 150,
-      y: 200
-    }
-  },
+  players: {},
   walls: {
     "leftWall": {x: 0, y: 0, width: 50, height: baseHeight, color: "#9ed8f0"},
     "topWall": {x: 0, y: 0, width: baseWidth, height: 50, color: "#9ed8f0"},
@@ -18,23 +15,26 @@ let initialState = {
       y: baseHeight - 50,
       width: baseWidth,
       height: 50,
-      color: "red"
+      color: "#9ed8f0"
     },
     "platform": {
       x: 150,
       y: baseHeight - 300,
       width: baseWidth / 4,
       height: 50,
-      color: "red"
+      color: "#9ed8f0"
     },
   },
 };
 
-class Room {
+export default class Room {
+  world = null;
+
   constructor(id, io) {
     this.id = id;
     this.io = io;
     this.world = new World(initialState);
+    setInterval(this.update, 15);
   }
 
   getNumPlayers() {
@@ -42,14 +42,33 @@ class Room {
     return (room) ? room.length : 0;
   }
 
+  join(socket) {
+    socket.join(this.id);
+    this.world.players[socket.id] = new Player(socket.id, 100, 100)
+  }
+
+  kick(socket) {
+    delete this.world.players[socket.id];
+  }
+
+  updateUserMouse(userID, mousePosition) {
+    this.world.updatePlayerMouse(userID, mousePosition);
+  }
+
+  updateUserControls(userID, controls) {
+    this.world.updatePlayerControls(userID, controls);
+  }
+
+  update = () => {
+    this.world.update();
+    this.updateRemoteState();
+  };
+
   broadcast(event, msg) {
     this.io.sockets.in(this.id).emit(event, msg);
   }
 
-  updateState() {
-    this.broadcast('updateState', JSON.stringify(this.world));
+  updateRemoteState() {
+    this.broadcast('updateState', this.world.serialize());
   }
 }
-
-
-module.exports = Room;

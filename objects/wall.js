@@ -29,5 +29,16 @@ export default class Wall {
       if (this.y + this.height < y + height) pos["bottom"] = true;
       return pos;
     } else return null;
+  };
+
+  serialize = () => {
+    let res = {};
+    res.id = this.id;
+    res.x = this.x;
+    res.y = this.y;
+    res.width = this.width;
+    res.height = this.height;
+    res.color = this.color;
+    return res;
   }
 }
