@@ -4,6 +4,8 @@ export default class Bullet {
   rotationSpeed = 20;
   rotation = Math.random() * 180;
   speed = {x: 0, y: 0};
+  refreshRate = 15;
+  lastUpdate = Date.now();
 
   constructor(id, x, y, speed) {
     this.id = id;
@@ -26,6 +28,12 @@ export default class Bullet {
   };
 
   update = (controls, world) => {
+    // Calculate time delta for animation:
+    let now = Date.now();
+    let delta = (now - this.lastUpdate) / this.refreshRate;
+    console.log
+    this.lastUpdate = now;
+
     this.x += this.speed.x;
     this.y += this.speed.y;
     this.rotation += this.rotationSpeed;

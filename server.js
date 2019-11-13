@@ -58,7 +58,7 @@ io.on('connection', function (socket) {
 
   //Send this event to everyone in the room.
   io.sockets.in(roomName).emit('connectToRoom', rooms[roomName].world.serialize(true));
-  console.table(rooms)
+  //console.table(rooms)
 });
 
 server.listen(3000);

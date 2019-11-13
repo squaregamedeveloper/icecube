@@ -4,6 +4,8 @@ import Bullet from "./bullet.js";
 import FragmentCluster from "./fragments.js"
 
 export default class World {
+  refreshRate = 15;
+
   constructor(initialState) {
     this.walls = [];
     for (let wall_id in initialState.walls) {

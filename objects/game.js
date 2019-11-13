@@ -106,6 +106,7 @@ function loop(a) {
 
   // Loop
   window.requestAnimationFrame(loop);
+  //setTimeout(loop, 500);
 
   // Debug
   ctx.font = "30px Arial";

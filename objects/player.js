@@ -69,8 +69,8 @@ export default class Player {
 
     this.velocity.y += g;
     this.isOnGround = false;
-    const nextPositionX = {x: this.x + (this.velocity.x*delta), y: this.y};
-    const nextPositionY = {x: this.x, y: this.y + (this.velocity.y*delta)};
+    const nextPositionX = {x: this.x + (this.velocity.x * delta), y: this.y};
+    const nextPositionY = {x: this.x, y: this.y + (this.velocity.y * delta)};
     let intersectsX = world.intersects(nextPositionX.x, nextPositionX.y, this.size, this.size);
     let intersectsY = world.intersects(nextPositionY.x, nextPositionY.y, this.size, this.size);
     if (intersectsX) {
@@ -104,8 +104,8 @@ export default class Player {
       this.velocity.y = 0;
       if (this.controls.up) this.velocity.y = this.speed.y;
     } else if (this.isOnWall) {
-      if ((/*!this.lastthis.controls.up &&*/ this.controls.up && this.controls.left && !this.controls.right && this.wallDir === "right") ||
-        (/*!this.lastthis.controls.up && */this.controls.up && this.controls.right && !this.controls.left && this.wallDir === "left")) {
+      if ((!this.lastControls.up && this.controls.up && this.controls.left && !this.controls.right && this.wallDir === "right") ||
+        (!this.lastControls.up && this.controls.up && this.controls.right && !this.controls.left && this.wallDir === "left")) {
         this.velocity.y = this.speed.y;
         this.isOnWall = false;
       }
@@ -130,7 +130,7 @@ export default class Player {
     this.y = nextPositionY.y;
 
     this.updateEyes();
-    this.lastcontrols = this.controls;
+    this.lastControls = this.controls;
   };
 
   updateEyes = () => {
