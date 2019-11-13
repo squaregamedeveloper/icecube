@@ -11,6 +11,8 @@ export default class Player {
   size = 50;
   speed = {x: 7, y: -15};
   jumpTimeout = null;
+  lastUpdate = Date.now();
+  refreshRate = 15;
 
   x = 150;
   y = 200;
@@ -22,7 +24,7 @@ export default class Player {
   fireTimer = 0;
   lastControls = {};
   controls = {};
-  mousePosition = {};
+  mousePosition = {x: 250, y: 250};
 
   constructor(id, x, y) {
     this.id = id;
@@ -49,22 +51,26 @@ export default class Player {
   };
 
   updateMousePosition = (mousePosition) => {
+    // if (typeof (exports) !== undefined) console.log(this.mousePosition);
     this.mousePosition = mousePosition;
   };
 
   update = (world) => {
+    // Calculate time delta for animation:
+    let now = Date.now();
+    let delta = (now - this.lastUpdate) / this.refreshRate;
+    this.lastUpdate = now;
+
     if (this.controls.left) this.velocity.x = -this.speed.x;
     else if (this.controls.right) this.velocity.x = this.speed.x;
-    else {
-      this.velocity.x *= this.friction;
-    }
+    else this.velocity.x *= this.friction;
 
     if (Math.abs(this.velocity.x) < 0.001) this.velocity.x = 0;
 
     this.velocity.y += g;
     this.isOnGround = false;
-    const nextPositionX = {x: this.x + this.velocity.x, y: this.y};
-    const nextPositionY = {x: this.x, y: this.y + this.velocity.y};
+    const nextPositionX = {x: this.x + (this.velocity.x*delta), y: this.y};
+    const nextPositionY = {x: this.x, y: this.y + (this.velocity.y*delta)};
     let intersectsX = world.intersects(nextPositionX.x, nextPositionX.y, this.size, this.size);
     let intersectsY = world.intersects(nextPositionY.x, nextPositionY.y, this.size, this.size);
     if (intersectsX) {
@@ -123,13 +129,13 @@ export default class Player {
     this.x = nextPositionX.x;
     this.y = nextPositionY.y;
 
-    this.updateEyes(this.mousePosition);
+    this.updateEyes();
     this.lastcontrols = this.controls;
   };
 
-  updateEyes = (mousePosition) => {
+  updateEyes = () => {
     let eyeX, eyeY;
-    let y = mousePosition.y - this.eyes.size;
+    let y = this.mousePosition.y - this.eyes.size;
 
     // Check if the mouse is above or below the player
     if (y < this.y + this.eyes.margin) eyeY = this.y + this.eyes.margin;
@@ -137,7 +143,7 @@ export default class Player {
     else eyeY = y;
 
     // Check if the mouse is to the left or right of the player
-    let x = mousePosition.x - this.eyes.size - this.eyes.margin;
+    let x = this.mousePosition.x - this.eyes.size - this.eyes.margin;
     if (x < this.x + this.eyes.margin) eyeX = this.x + this.eyes.margin;
     else if (x > this.x + this.size - 2 * (this.eyes.size + this.eyes.margin)) eyeX = this.x + this.size - 2 * (this.eyes.size + this.eyes.margin);
     else eyeX = x;
@@ -157,6 +163,8 @@ export default class Player {
     res.isOnWall = this.isOnWall;
     res.wallDir = this.wallDir;
     res.fireTimer = this.fireTimer;
+    res.mousePosition = this.mousePosition;
+    res.controls = this.controls;
     return res;
   };
 
@@ -170,5 +178,7 @@ export default class Player {
     this.isOnWall = state.isOnWall;
     this.wallDir = state.wallDir;
     this.fireTimer = state.fireTimer;
+    this.mousePosition = state.mousePosition;
+    this.controls = state.controls;
   }
 };

@@ -75,12 +75,13 @@ socket.on("connectToRoom", (data) => {
 });
 
 socket.on('updateState', (data) => {
+  // console.table([data['players'][player1_id].mousePosition, mousePosition]);
   world.updateState(data);
 });
 
 
 let old_controls = {};
-let mouseRefreshRate = 100;
+let mouseRefreshRate = 1000;
 
 function loop(a) {
   // Update server with the controls:

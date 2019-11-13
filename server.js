@@ -5,10 +5,11 @@ const path = require('path');
 const express = require('express');
 const app = express();
 const server = require('http').createServer(app);
-const io = require('socket.io')(server, {
-  pingInterval: 4000,
+/*const io = require('socket.io')(server, {
+  pingInterval: 8000,
   pingTimeout: 4000,
-});
+});*/
+const io = require('socket.io')(server);
 
 // Define middlewares:
 app.use('/assets', express.static(__dirname + '/assets'));

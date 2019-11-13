@@ -72,9 +72,9 @@ export default class World {
 
   draw = (ctx) => {
     this.walls.forEach((w) => w.draw(ctx));
-    for (let player_id in this.players) this.players[player_id].draw(ctx);
     this.bullets.forEach((b) => b.draw(ctx));
     this.fragmentClusters.forEach((fc) => fc.draw(ctx));
+    for (let player_id in this.players) this.players[player_id].draw(ctx);
   };
 
   intersects = (x, y, width, height) => {
