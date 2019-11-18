@@ -1,16 +1,16 @@
-export default class Bullet {
-  x = 0;
-  y = 0;
+import Rectangle from "./rectangle.js";
+export default class Bullet extends Rectangle{
   rotationSpeed = 20;
   rotation = Math.random() * 180;
   speed = {x: 0, y: 0};
   refreshRate = 15;
   lastUpdate = Date.now();
+  damage = 5;
 
-  constructor(id, x, y, speed) {
+  constructor(id, source, x, y, speed) {
+    super(x, y, Bullet.size, Bullet.size);
     this.id = id;
-    this.x = x;
-    this.y = y;
+    this.source = source;
     this.speed = speed;
   }
 
@@ -31,7 +31,6 @@ export default class Bullet {
     // Calculate time delta for animation:
     let now = Date.now();
     let delta = (now - this.lastUpdate) / this.refreshRate;
-    console.log
     this.lastUpdate = now;
 
     this.x += this.speed.x;
@@ -42,8 +41,10 @@ export default class Bullet {
   serialize = () => {
     let res = {};
     res.id = this.id;
+    res.source = this.source;
     res.x = this.x;
     res.y = this.y;
+    res.damage = this.damage;
     res.speed = this.speed;
     return res;
   };

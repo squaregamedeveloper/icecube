@@ -19,7 +19,7 @@ app.use('/objects', express.static(__dirname + '/objects'));
 app.get('/', function (req, res) {
   res.sendFile('./index.html', {root: __dirname});
 });
-let roomSize = 2;
+let roomSize = 8;
 let rooms = {};
 
 
@@ -27,6 +27,13 @@ let rooms = {};
 var roomnumber = 0;
 let roomName = "room-" + roomnumber;
 io.on('connection', function (socket) {
+
+  // Get player params
+  let playerInfo = {
+    playerName: socket.handshake.query.playerName,
+    color: socket.handshake.query.color
+  }
+  console.log(playerInfo.color);
 
   // Handle room logic:
   roomName = "room-" + roomnumber;
@@ -37,8 +44,8 @@ io.on('connection', function (socket) {
     roomName = "room-" + roomnumber;
     rooms[roomName] = new Room(roomName, io);
   }
-  console.log(`Player ${socket.id} connected from room ${roomName}`);
-  rooms[roomName].join(socket);
+  console.log(`Player ${playerInfo.playerName} connected from room ${roomName}`);
+  rooms[roomName].join(socket, playerInfo);
 
 
   ((room, socket) => {

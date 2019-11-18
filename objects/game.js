@@ -13,6 +13,7 @@ let scale = 1;
 // ctx.globalAlpha = 0.1;
 let mousePosition = {x: 250, y: 250};
 let controls = new Controls();
+let socket;
 document.addEventListener("mousemove", (e) => {
   mousePosition = {x: e.clientX / scale, y: e.clientY / scale};
 });
@@ -20,6 +21,27 @@ document.addEventListener("mousedown", controls.mouseDown);
 document.addEventListener("mouseup", controls.mouseUp);
 document.addEventListener("keyup", controls.keyUp);
 document.addEventListener("keydown", controls.keyDown);
+document.getElementById("playButton").onclick = () => {
+  let playerName = document.getElementById("name").value;
+  let color = document.getElementById("color").value;
+
+  //Connecting To socket.io
+  socket = io.connect(window.location.host, {query: `playerName=${playerName}&color=${color}`});
+
+  socket.on("connectToRoom", (data) => {
+    c.style.display = 'block';
+    document.getElementById('menu').style.display='none';
+    //alert(JSON.stringify(data));
+    player1_id = socket.id;
+    world = new World(data);
+    window.requestAnimationFrame(loop);
+  });
+
+  socket.on('updateState', (data) => {
+    // console.table([data['players'][player1_id].mousePosition, mousePosition]);
+    world.updateState(data);
+  });
+};
 
 let player1_id = generateID();
 let player2_id = generateID();
@@ -63,21 +85,6 @@ function handleCanvas() {
   ctx.scale(scale, scale);
   ctx.clearRect(0, 0, c.width, c.height);
 }
-
-//Connecting To socket.io
-
-var socket = io.connect(window.location.host);
-socket.on("connectToRoom", (data) => {
-  //alert(JSON.stringify(data));
-  player1_id = socket.id;
-  world = new World(data);
-  window.requestAnimationFrame(loop);
-});
-
-socket.on('updateState', (data) => {
-  // console.table([data['players'][player1_id].mousePosition, mousePosition]);
-  world.updateState(data);
-});
 
 
 let old_controls = {};

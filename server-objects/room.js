@@ -42,9 +42,9 @@ export default class Room {
     return (room) ? room.length : 0;
   }
 
-  join(socket) {
+  join(socket, playerInfo) {
     socket.join(this.id);
-    this.world.players[socket.id] = new Player(socket.id, 100, 100)
+    this.world.players[socket.id] = new Player(socket.id, 100, 100, playerInfo.playerName, playerInfo.color)
   }
 
   kick(socket) {

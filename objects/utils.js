@@ -15,3 +15,11 @@ export function createGradient(ctx, x0, y0, x1, y1) {
   return grd;
 }
 
+export function LightenDarkenColor(col, amt) {
+  let num = parseInt(col, 16);
+  let r = ((num >> 16) + amt) % 256;
+  let b = (((num >> 8) & 0x00FF) + amt) % 256;
+  let g = ((num & 0x0000FF) + amt) % 256;
+  let newColor = g | (b << 8) | (r << 16);
+  return "#" + newColor.toString(16);
+}

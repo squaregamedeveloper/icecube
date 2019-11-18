@@ -17,7 +17,7 @@ export default class World {
     this.players = {};
     for (let player_id in initialState.players) {
       let {x, y} = initialState.players[player_id];
-      this.players[player_id] = new Player(player_id, x, y);
+      this.players[player_id] = new Player(player_id, x, y, initialState.name, initialState.color);
     }
 
     this.bullets = [];
@@ -31,6 +31,12 @@ export default class World {
   updatePlayerPositions = () => {
     for (let player_id in this.players) {
       let player = this.players[player_id];
+      // Reset player;
+      if(player.hp <= 0){
+        player.x = 100;
+        player.y = 100;
+        player.hp = 10;
+      }
       player.update(this);
     }
   };
@@ -50,11 +56,25 @@ export default class World {
     for (let i = 0; i < this.bullets.length; i++) {
       let b = this.bullets[i];
       b.update();
-      let intersection = this.intersects(b.x, b.y, Bullet.size, Bullet.size);
+      let intersection = this.intersectsWalls(b);
       if (intersection) {
         this.bullets.splice(i, 1);
         this.fragmentClusters.push(new FragmentCluster(b.x, b.y, intersection));
         i--;
+        break;
+      }
+
+      for (let id in this.players) {
+        if(id === b.source) continue;
+        let player = this.players[id];
+        let intersects = player.intersects(b);
+        if (intersects) {
+          player.takeDamage(b.damage);
+          this.bullets.splice(i, 1);
+          this.fragmentClusters.push(new FragmentCluster(b.x, b.y, intersects));
+          i--;
+          break;
+        }
       }
     }
   };
@@ -79,10 +99,10 @@ export default class World {
     for (let player_id in this.players) this.players[player_id].draw(ctx);
   };
 
-  intersects = (x, y, width, height) => {
+  intersectsWalls = (rect) => {
     let intersects = null;
     for (let w of this.walls) {
-      intersects = w.intersects(x, y, width, height);
+      intersects = w.intersects(rect);
       if (intersects) return intersects;
     }
     return intersects;
@@ -102,14 +122,19 @@ export default class World {
   };
 
   updateState = (state) => {
-    for (let player_id in this.players) {
+    for (let player_id in state['players']) {
       this.players[player_id].updateState(state['players'][player_id])
+    }
+    for (let player_id in this.players){
+      if (!(player_id in state['players'])){
+        delete this.players[player_id];
+      }
     }
     // TODO: Change bullet replacement to update
     this.bullets = [];
     for (let bullet of state.bullets) {
-      let {x, y, speed} = bullet;
-      this.bullets.push(new Bullet("", x, y, speed));
+      let {source, x, y, speed} = bullet;
+      this.bullets.push(new Bullet("",source, x, y, speed));
     }
   }
 }

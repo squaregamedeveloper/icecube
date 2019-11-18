@@ -1,21 +1,20 @@
 import Bullet from "./bullet.js";
-import {generateID} from "./utils.js";
+import Rectangle from "./rectangle.js";
+import {generateID, LightenDarkenColor} from "./utils.js";
 
-const g = 9.8 / 16;
+const g = 9.8 / 16;  //TODO
 
 
-export default class Player {
+export default class Player extends Rectangle {
   bulletSpeed = 15;
-  fireInterval = 10;
+  fireInterval = 30;
   friction = 0.9;
-  size = 50;
   speed = {x: 7, y: -15};
   jumpTimeout = null;
   lastUpdate = Date.now();
   refreshRate = 15;
+  hp = 20;
 
-  x = 150;
-  y = 200;
   eyes = {x: 10, y: 10, size: 10, margin: 5};
   velocity = {x: 0, y: 0};
   isOnGround = false;
@@ -26,22 +25,32 @@ export default class Player {
   controls = {};
   mousePosition = {x: 250, y: 250};
 
-  constructor(id, x, y) {
+  constructor(id, x, y, name, color) {
+    let size = 50;
+    super(x, y, size, size);
+    this.size = size;
     this.id = id;
-    this.x = x;
-    this.y = y;
+    this.name = name;
+    this.color = color;
+    this.eyesColor = LightenDarkenColor(color, 20);
   }
 
   draw = (ctx) => {
+    // Draw the player name:
+    ctx.font = "10px Arial";
+    ctx.fillStyle = 'black';
+    let stringLen = this.name.length * 6.2;
+    ctx.fillText(this.name + " : " + this.hp, this.x + (this.size / 2) - (stringLen / 2), this.y - 10);
+
     ctx.beginPath();
-    ctx.fillStyle = "blue";
+    ctx.fillStyle = this.color;
     ctx.fillRect(this.x, this.y, this.size, this.size);
     this.drawEyes(ctx);
     ctx.stroke();
   };
 
   drawEyes = (ctx) => {
-    ctx.fillStyle = "red";
+    ctx.fillStyle = this.eyesColor;
     ctx.fillRect(this.x + this.eyes.x, this.y + this.eyes.y, this.eyes.size, this.eyes.size);
     ctx.fillRect(this.x + this.eyes.x + this.eyes.size + this.eyes.margin, this.y + this.eyes.y, this.eyes.size, this.eyes.size);
   };
@@ -71,8 +80,8 @@ export default class Player {
     this.isOnGround = false;
     const nextPositionX = {x: this.x + (this.velocity.x * delta), y: this.y};
     const nextPositionY = {x: this.x, y: this.y + (this.velocity.y * delta)};
-    let intersectsX = world.intersects(nextPositionX.x, nextPositionX.y, this.size, this.size);
-    let intersectsY = world.intersects(nextPositionY.x, nextPositionY.y, this.size, this.size);
+    let intersectsX = world.intersectsWalls(new Rectangle(nextPositionX.x, nextPositionX.y, this.size, this.size));
+    let intersectsY = world.intersectsWalls(new Rectangle(nextPositionY.x, nextPositionY.y, this.size, this.size));
     if (intersectsX) {
       if (this.velocity.x < 0) {
         nextPositionX.x = intersectsX["x"] + intersectsX["width"];
@@ -104,8 +113,8 @@ export default class Player {
       this.velocity.y = 0;
       if (this.controls.up) this.velocity.y = this.speed.y;
     } else if (this.isOnWall) {
-      if ((!this.lastControls.up && this.controls.up && this.controls.left && !this.controls.right && this.wallDir === "right") ||
-        (!this.lastControls.up && this.controls.up && this.controls.right && !this.controls.left && this.wallDir === "left")) {
+      if ((/*!this.lastControls.up &&*/ this.controls.up && this.controls.left && !this.controls.right && this.wallDir === "right") ||
+        (/*!this.lastControls.up &&*/ this.controls.up && this.controls.right && !this.controls.left && this.wallDir === "left")) {
         this.velocity.y = this.speed.y;
         this.isOnWall = false;
       }
@@ -122,7 +131,7 @@ export default class Player {
       dir.y /= mouseDistance;
       let speed = {x: dir.x * this.bulletSpeed, y: dir.y * this.bulletSpeed};
 
-      let bullet = new Bullet(generateID(), this.x + this.size / 2, this.y + this.size / 2, speed);
+      let bullet = new Bullet(generateID(), this.id, this.x + this.size / 2, this.y + this.size / 2, speed);
       world.addBullet(bullet);
     }
 
@@ -131,6 +140,10 @@ export default class Player {
 
     this.updateEyes();
     this.lastControls = this.controls;
+  };
+
+  takeDamage = (damage) => {
+    this.hp -= damage;
   };
 
   updateEyes = () => {
@@ -157,6 +170,7 @@ export default class Player {
     res.id = this.id;
     res.x = this.x;
     res.y = this.y;
+    res.hp = this.hp;
     res.velocity = this.velocity;
     res.eyes = this.eyes;
     res.isOnGround = this.isOnGround;
@@ -165,6 +179,9 @@ export default class Player {
     res.fireTimer = this.fireTimer;
     res.mousePosition = this.mousePosition;
     res.controls = this.controls;
+    res.color = this.color;
+    res.eyesColor = this.eyesColor;
+    res.name = this.name;
     return res;
   };
 
@@ -172,6 +189,7 @@ export default class Player {
     this.id = state.id;
     this.x = state.x;
     this.y = state.y;
+    this.hp = state.hp;
     this.velocity = state.velocity;
     this.eyes = state.eyes;
     this.isOnGround = state.isOnGround;
@@ -180,5 +198,8 @@ export default class Player {
     this.fireTimer = state.fireTimer;
     this.mousePosition = state.mousePosition;
     this.controls = state.controls;
+    this.color = state.color;
+    this.eyesColor = state.eyesColor;
+    this.name = state.name;
   }
 };

@@ -1,34 +1,14 @@
-export default class Wall {
+import Rectangle from "./rectangle.js";
+export default class Wall extends Rectangle {
   constructor(id, x, y, width, height, color = "blue") {
+    super(x, y, width, height);
     this.id = id;
-    this.x = x;
-    this.y = y;
-    this.width = width;
-    this.height = height;
     this.color = color;
   }
 
   draw = (ctx) => {
     ctx.fillStyle = this.color;
     ctx.fillRect(this.x, this.y, this.width, this.height);
-  };
-
-  intersects = (x, y, width, height) => {
-    let pos = {
-      "x": this.x,
-      "y": this.y,
-      "width": this.width,
-      "height": this.height,
-    };
-
-    //Check for intersection:
-    if (this.x < x + width && x < this.x + this.width && this.y < y + height && y < this.y + this.height) {
-      if (this.x > x) pos["left"] = true;
-      if (this.x + this.width < x + width) pos["right"] = true;
-      if (this.y > y) pos["top"] = true;
-      if (this.y + this.height < y + height) pos["bottom"] = true;
-      return pos;
-    } else return null;
   };
 
   serialize = () => {
@@ -42,3 +22,4 @@ export default class Wall {
     return res;
   }
 }
+
