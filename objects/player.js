@@ -1,6 +1,6 @@
 import Bullet from "./bullet.js";
 import Rectangle from "./rectangle.js";
-import {generateID, LightenDarkenColor} from "./utils.js";
+import {generateID, LightenDarkenColor, PickEyesColor} from "./utils.js";
 
 const g = 9.8 / 16;  //TODO
 
@@ -32,7 +32,7 @@ export default class Player extends Rectangle {
     this.id = id;
     this.name = name;
     this.color = color;
-    this.eyesColor = LightenDarkenColor(color, 20);
+    this.eyesColor = PickEyesColor(this.color);
   }
 
   draw = (ctx) => {
@@ -131,7 +131,7 @@ export default class Player extends Rectangle {
       dir.y /= mouseDistance;
       let speed = {x: dir.x * this.bulletSpeed, y: dir.y * this.bulletSpeed};
 
-      let bullet = new Bullet(generateID(), this.id, this.x + this.size / 2, this.y + this.size / 2, speed);
+      let bullet = new Bullet(generateID(), this.id, this.x + this.size / 2, this.y + this.size / 2, speed, this.eyesColor);
       world.addBullet(bullet);
     }
 

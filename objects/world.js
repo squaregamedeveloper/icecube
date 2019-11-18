@@ -16,8 +16,8 @@ export default class World {
 
     this.players = {};
     for (let player_id in initialState.players) {
-      let {x, y} = initialState.players[player_id];
-      this.players[player_id] = new Player(player_id, x, y, initialState.name, initialState.color);
+      let {x, y, name, color} = initialState.players[player_id];
+      this.players[player_id] = new Player(player_id, x, y, name, color);
     }
 
     this.bullets = [];
@@ -134,7 +134,7 @@ export default class World {
     this.bullets = [];
     for (let bullet of state.bullets) {
       let {source, x, y, speed} = bullet;
-      this.bullets.push(new Bullet("",source, x, y, speed));
+      this.bullets.push(new Bullet("",source, x, y, speed, this.players[source].eyesColor));
     }
   }
 }

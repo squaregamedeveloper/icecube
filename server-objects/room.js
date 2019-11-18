@@ -1,6 +1,6 @@
-import World from "../objects/world";
-import {generateID} from "../objects/utils";
-import Player from "../objects/player";
+import World from "../objects/world.js";
+import {generateID} from "../objects/utils.js";
+import Player from "../objects/player.js";
 
 let baseWidth = 1853;
 let baseHeight = 951;
@@ -44,7 +44,7 @@ export default class Room {
 
   join(socket, playerInfo) {
     socket.join(this.id);
-    this.world.players[socket.id] = new Player(socket.id, 100, 100, playerInfo.playerName, playerInfo.color)
+    this.world.players[socket.id] = new Player(socket.id, 100, 100, playerInfo.playerName, playerInfo.color);
   }
 
   kick(socket) {

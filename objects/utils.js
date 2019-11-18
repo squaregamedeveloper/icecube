@@ -23,3 +23,12 @@ export function LightenDarkenColor(col, amt) {
   let newColor = g | (b << 8) | (r << 16);
   return "#" + newColor.toString(16);
 }
+
+export function PickEyesColor(col) {
+  let num = parseInt(col.substr(1), 16);
+  let r = (num >> 16);
+  let b = ((num >> 8) & 0x00FF);
+  let g = (num & 0x0000FF);
+  let newColor = b | (r << 8) | (g << 16);
+  return "#" + newColor.toString(16);
+}
