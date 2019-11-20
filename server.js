@@ -14,14 +14,14 @@ const io = require('socket.io')(server);
 // Define middlewares:
 app.use('/assets', express.static(__dirname + '/assets'));
 app.use('/objects', express.static(__dirname + '/objects'));
+app.use('/client-objects', express.static(__dirname + '/client-objects'));
 
 // Define routes:
 app.get('/', function (req, res) {
   res.sendFile('./index.html', {root: __dirname});
 });
-let roomSize = 8;
+export let roomSize = 2;
 let rooms = {};
-
 
 // Define socket io events:
 var roomnumber = 0;
@@ -32,21 +32,26 @@ io.on('connection', function (socket) {
   let playerInfo = {
     playerName: socket.handshake.query.playerName,
     color: socket.handshake.query.color
-  }
-  console.log(playerInfo.color);
+  };
 
   // Handle room logic:
   roomName = "room-" + roomnumber;
   let room = rooms[roomName];
+
   // If room exists and full
   if (!room || room.getNumPlayers() >= roomSize) {
     roomnumber++;
     roomName = "room-" + roomnumber;
     rooms[roomName] = new Room(roomName, io);
+    room = rooms[roomName];
   }
-  console.log(`Player ${playerInfo.playerName} connected from room ${roomName}`);
-  rooms[roomName].join(socket, playerInfo);
 
+  // Connect a player to the room
+  console.log(`Player ${playerInfo.playerName} connected from room ${roomName}`);
+  room.join(socket, playerInfo);
+
+  // Room is full
+  if(room.getNumPlayers() === roomSize) room.startGame();
 
   ((room, socket) => {
     socket.on('updateControls', (controls) => {
@@ -59,13 +64,13 @@ io.on('connection', function (socket) {
     socket.on('disconnect', () => {
       console.log(`Player ${socket.id} disconnected from room ${room.id}`);
       room.kick(socket);
+      if(room.getNumPlayers() == 0){
+        rooms[room.id].clearUpdateInterval();
+        delete rooms[room.id];
+      }
     });
   })(rooms[roomName], socket);
 
-
-  //Send this event to everyone in the room.
-  io.sockets.in(roomName).emit('connectToRoom', rooms[roomName].world.serialize(true));
-  //console.table(rooms)
 });
 
 server.listen(3000);

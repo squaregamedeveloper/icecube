@@ -4,17 +4,19 @@ export default class FragmentCluster {
   speed = 5;
   rotationSpeed = 7;
   alpha = 255;
+  lastUpdate = Date.now();
+  refreshRate = 15;
 
-  constructor(x, y, intersectionDirections, count = 10, alphaDecay = 5) {
+  constructor(x, y, intersectionDirections, count = 10, alphaDecay = 6) {
     this.alphaDecay = alphaDecay;
     for (let i = 0; i <= count; i++) {
       let speed = {x: 0, y: 0};
       if (intersectionDirections.bottom || intersectionDirections.top) {
         speed.x = this.randomInRange(-this.speed, this.speed);
-        speed.y = (intersectionDirections.bottom) ? this.randomInRange(0, this.speed) : this.randomInRange(-this.speed, 0);
+        speed.y = (intersectionDirections.bottom) ? this.randomInRange(1, this.speed) : this.randomInRange(-this.speed, -1);
       } else if (intersectionDirections.right || intersectionDirections.left) {
         speed.y = this.randomInRange(-this.speed, this.speed);
-        speed.x = (intersectionDirections.right) ? this.randomInRange(0, this.speed) : this.randomInRange(-this.speed, 0);
+        speed.x = (intersectionDirections.right) ? this.randomInRange(1, this.speed) : this.randomInRange(-this.speed, -1);
       }
       this.frags.push({
         x: x,
@@ -32,9 +34,14 @@ export default class FragmentCluster {
   };
 
   update = () => {
+    // Calculate time delta for animation:
+    let now = Date.now();
+    let delta = (now - this.lastUpdate) / this.refreshRate;
+    this.lastUpdate = now;
+
     for (let f of this.frags) {
-      f.x += f.speed.x;
-      f.y += f.speed.y;
+      f.x += f.speed.x * delta;
+      f.y += f.speed.y* delta;
       f.rotation += f.rotationSpeed;
     }
 
@@ -51,7 +58,7 @@ export default class FragmentCluster {
       ctx.translate(f.x + f.size / 2, f.y + f.size / 2);
       // rotate the rect
       ctx.rotate(f.rotation * Math.PI / 180);
-      ctx.fillStyle = `#75aedc${(this.alpha).toString(16)}`;
+      ctx.fillStyle = `#555${(this.alpha).toString(16)}`;
       ctx.fillRect(-f.size / 2, -f.size / 2, f.size, f.size);
       ctx.stroke();
       ctx.restore();

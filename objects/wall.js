@@ -1,6 +1,6 @@
 import Rectangle from "./rectangle.js";
 export default class Wall extends Rectangle {
-  constructor(id, x, y, width, height, color = "blue") {
+  constructor(id, x, y, width, height, color = "#071739") {
     super(x, y, width, height);
     this.id = id;
     this.color = color;

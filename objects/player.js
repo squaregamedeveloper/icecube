@@ -2,8 +2,7 @@ import Bullet from "./bullet.js";
 import Rectangle from "./rectangle.js";
 import {generateID, LightenDarkenColor, PickEyesColor} from "./utils.js";
 
-const g = 9.8 / 16;  //TODO
-
+const g = 0.5;  //TODO
 
 export default class Player extends Rectangle {
   bulletSpeed = 15;
@@ -11,9 +10,9 @@ export default class Player extends Rectangle {
   friction = 0.9;
   speed = {x: 7, y: -15};
   jumpTimeout = null;
-  lastUpdate = Date.now();
-  refreshRate = 15;
-  hp = 20;
+  hp = 10;
+  bulletIndex = 0;
+  score = 0;
 
   eyes = {x: 10, y: 10, size: 10, margin: 5};
   velocity = {x: 0, y: 0};
@@ -39,7 +38,7 @@ export default class Player extends Rectangle {
     // Draw the player name:
     ctx.font = "10px Arial";
     ctx.fillStyle = 'black';
-    let stringLen = this.name.length * 6.2;
+    let stringLen = this.name.length * 7;
     ctx.fillText(this.name + " : " + this.hp, this.x + (this.size / 2) - (stringLen / 2), this.y - 10);
 
     ctx.beginPath();
@@ -60,26 +59,20 @@ export default class Player extends Rectangle {
   };
 
   updateMousePosition = (mousePosition) => {
-    // if (typeof (exports) !== undefined) console.log(this.mousePosition);
     this.mousePosition = mousePosition;
   };
 
   update = (world) => {
-    // Calculate time delta for animation:
-    let now = Date.now();
-    let delta = (now - this.lastUpdate) / this.refreshRate;
-    this.lastUpdate = now;
-
     if (this.controls.left) this.velocity.x = -this.speed.x;
     else if (this.controls.right) this.velocity.x = this.speed.x;
     else this.velocity.x *= this.friction;
 
     if (Math.abs(this.velocity.x) < 0.001) this.velocity.x = 0;
 
-    this.velocity.y += g;
+    this.velocity.y += g * world.delta * world.delta;
     this.isOnGround = false;
-    const nextPositionX = {x: this.x + (this.velocity.x * delta), y: this.y};
-    const nextPositionY = {x: this.x, y: this.y + (this.velocity.y * delta)};
+    const nextPositionX = {x: this.x + (this.velocity.x * world.delta), y: this.y};
+    const nextPositionY = {x: this.x, y: this.y + (this.velocity.y * world.delta)};
     let intersectsX = world.intersectsWalls(new Rectangle(nextPositionX.x, nextPositionX.y, this.size, this.size));
     let intersectsY = world.intersectsWalls(new Rectangle(nextPositionY.x, nextPositionY.y, this.size, this.size));
     if (intersectsX) {
@@ -119,7 +112,7 @@ export default class Player extends Rectangle {
         this.isOnWall = false;
       }
     }
-    this.fireTimer += 1;
+    this.fireTimer += world.delta;
     if (this.controls.shoot && this.fireTimer >= this.fireInterval) {
       this.fireTimer = 0;
       let dir = {
@@ -131,7 +124,9 @@ export default class Player extends Rectangle {
       dir.y /= mouseDistance;
       let speed = {x: dir.x * this.bulletSpeed, y: dir.y * this.bulletSpeed};
 
-      let bullet = new Bullet(generateID(), this.id, this.x + this.size / 2, this.y + this.size / 2, speed, this.eyesColor);
+      let bulletID = this.id + this.bulletIndex;
+      let bullet = new Bullet(bulletID, this.id, this.x + this.size / 2, this.y + this.size / 2, speed, this.eyesColor);
+      this.bulletIndex++;
       world.addBullet(bullet);
     }
 
@@ -144,6 +139,7 @@ export default class Player extends Rectangle {
 
   takeDamage = (damage) => {
     this.hp -= damage;
+    return this.hp;
   };
 
   updateEyes = () => {
@@ -182,6 +178,8 @@ export default class Player extends Rectangle {
     res.color = this.color;
     res.eyesColor = this.eyesColor;
     res.name = this.name;
+    res.bulletIndex = this.bulletIndex;
+    res.score = this.score;
     return res;
   };
 
@@ -200,6 +198,8 @@ export default class Player extends Rectangle {
     this.controls = state.controls;
     this.color = state.color;
     this.eyesColor = state.eyesColor;
+    this.bulletIndex = state.bulletIndex;
     this.name = state.name;
+    this.score = state.score;
   }
 };

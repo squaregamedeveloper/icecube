@@ -5,6 +5,7 @@ import FragmentCluster from "./fragments.js"
 
 export default class World {
   refreshRate = 15;
+  lastUpdate = Date.now();
 
   constructor(initialState) {
     this.walls = [];
@@ -20,12 +21,16 @@ export default class World {
       this.players[player_id] = new Player(player_id, x, y, name, color);
     }
 
-    this.bullets = [];
+    this.bullets = {};
     this.fragmentClusters = [];
   }
 
+  reset = () => {
+    this.lastUpdate = Date.now();
+  };
+
   addBullet = (bullet) => {
-    this.bullets.push(bullet);
+    this.bullets[bullet.id] = bullet;
   };
 
   updatePlayerPositions = () => {
@@ -53,14 +58,13 @@ export default class World {
   };
 
   updateBulletsPosition = () => {
-    for (let i = 0; i < this.bullets.length; i++) {
-      let b = this.bullets[i];
-      b.update();
+    for (let bulletID in this.bullets) {
+      let b = this.bullets[bulletID];
+      b.update(this);
       let intersection = this.intersectsWalls(b);
       if (intersection) {
-        this.bullets.splice(i, 1);
+        delete this.bullets[bulletID];
         this.fragmentClusters.push(new FragmentCluster(b.x, b.y, intersection));
-        i--;
         break;
       }
 
@@ -69,10 +73,11 @@ export default class World {
         let player = this.players[id];
         let intersects = player.intersects(b);
         if (intersects) {
-          player.takeDamage(b.damage);
-          this.bullets.splice(i, 1);
+          if(player.takeDamage(b.damage) <= 0) {
+            this.players[b.source].score++;
+          }
+          delete this.bullets[bulletID];
           this.fragmentClusters.push(new FragmentCluster(b.x, b.y, intersects));
-          i--;
           break;
         }
       }
@@ -87,6 +92,11 @@ export default class World {
   };
 
   update = () => {
+    // Calculate time delta for animation:
+    let now = Date.now();
+    this.delta = (now - this.lastUpdate) / this.refreshRate;
+    this.lastUpdate = now;
+
     this.updateBulletsPosition();
     this.updatefragmentClusters();
     this.updatePlayerPositions();
@@ -94,8 +104,8 @@ export default class World {
 
   draw = (ctx) => {
     this.walls.forEach((w) => w.draw(ctx));
-    this.bullets.forEach((b) => b.draw(ctx));
     this.fragmentClusters.forEach((fc) => fc.draw(ctx));
+    for (let bulletID in this.bullets) this.bullets[bulletID].draw(ctx);
     for (let player_id in this.players) this.players[player_id].draw(ctx);
   };
 
@@ -115,7 +125,7 @@ export default class World {
       "walls": [],
     };
     if (initial) for (let wall of this.walls) res["walls"].push(wall.serialize());
-    for (let bullet of this.bullets) res["bullets"].push(bullet.serialize());
+    for (let bulletID in this.bullets) res["bullets"].push(this.bullets[bulletID].serialize());
     for (let player_id in this.players) res["players"][player_id] = (this.players[player_id].serialize());
 
     return res;
@@ -131,10 +141,16 @@ export default class World {
       }
     }
     // TODO: Change bullet replacement to update
-    this.bullets = [];
+    //this.bullets = {};
     for (let bullet of state.bullets) {
       let {source, x, y, speed} = bullet;
-      this.bullets.push(new Bullet("",source, x, y, speed, this.players[source].eyesColor));
+      if (this.players[source]){
+        this.bullets[bullet["id"]] = new Bullet(bullet["id"], source, x, y, speed, this.players[source].eyesColor)
+      }
+      else{
+        delete this.bullets[bullet["id"]];
+      }
+
     }
   }
 }

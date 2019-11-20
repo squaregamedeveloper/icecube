@@ -30,5 +30,6 @@ export function PickEyesColor(col) {
   let b = ((num >> 8) & 0x00FF);
   let g = (num & 0x0000FF);
   let newColor = b | (r << 8) | (g << 16);
-  return "#" + newColor.toString(16);
+  return "#000";
+  // TODO: fix this.
 }

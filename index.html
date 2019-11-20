@@ -2,18 +2,35 @@
 <html lang="en">
     <head>
         <link href="assets/css/style.css" rel="stylesheet" type="text/css">
+
+        <link href="https://fonts.googleapis.com/css?family=Jura:400,700&display=swap" rel="stylesheet">
+
         <meta charset="UTF-8">
         <title>Square Game</title>
     </head>
     <body>
-        <canvas id="game"></canvas>
-        <div id="menu">
-            <input name="name" id="name" type="text" placeholder="Username"> <br />
-            <input name="color" id="color" type="color"> <br />
-            <button id="playButton">Play</button>
-        </div>
-        <script src="socket.io/socket.io.js"></script>
-        <script type="module" src="objects/game.js"></script>
-    </body>
+        <canvas id="background"></canvas>
+        <div id="foreground">
+            <section id="loader">
+                <img src="assets/images/loader.gif" alt="loading" />
+                <h3 id="connected"></h3>
+            </section>
 
+            <section id="login">
+                <h1 class="logo"> <span>ICE</span>CUBE </h1>
+                <input name="name" id="name" type="text" placeholder="Username"> <br />
+                <input name="color" id="color" type="color"> <br />
+                <button id="playButton">Play</button>
+            </section>
+
+            <section id="game">
+                <h1 class="logo"> <span>ICE</span>CUBE </h1>
+                <canvas id="canvas"></canvas>
+                <div id="scoreBoard"></div>
+            </section>
+        </div>
+
+        <script src="socket.io/socket.io.js"></script>
+        <script type="module" src="objects/client.js"></script>
+    </body>
 </html>

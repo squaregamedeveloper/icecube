@@ -3,8 +3,6 @@ export default class Bullet extends Rectangle{
   rotationSpeed = 20;
   rotation = Math.random() * 180;
   speed = {x: 0, y: 0};
-  refreshRate = 15;
-  lastUpdate = Date.now();
   damage = 5;
 
   constructor(id, source, x, y, speed, color) {
@@ -28,15 +26,10 @@ export default class Bullet extends Rectangle{
     ctx.restore();
   };
 
-  update = (controls, world) => {
-    // Calculate time delta for animation:
-    let now = Date.now();
-    let delta = (now - this.lastUpdate) / this.refreshRate;
-    this.lastUpdate = now;
-
-    this.x += this.speed.x;
-    this.y += this.speed.y;
-    this.rotation += this.rotationSpeed;
+  update = (world) => {
+    this.x += this.speed.x * world.delta;
+    this.y += this.speed.y * world.delta;
+    this.rotation -= this.rotationSpeed;
   };
 
   serialize = () => {
