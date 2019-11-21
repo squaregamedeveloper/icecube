@@ -6,13 +6,21 @@ import FragmentCluster from "./fragments.js"
 export default class World {
   refreshRate = 15;
   lastUpdate = Date.now();
+  spawnPointCounter = 0;
 
-  constructor(initialState) {
+  constructor(initialState, isClient) {
+    this.client = isClient;
+
     this.walls = [];
     for (let wall_id in initialState.walls) {
       let id = wall_id;
       let {x, y, width, height, color} = initialState.walls[id];
       this.walls.push(new Wall(id, x, y, width, height, color))
+    }
+
+    this.spawnPoints = [];
+    for(let spawnPoint of initialState.spawnPoints){
+      this.spawnPoints.push(spawnPoint)
     }
 
     this.players = {};
@@ -37,10 +45,10 @@ export default class World {
     for (let player_id in this.players) {
       let player = this.players[player_id];
       // Reset player;
-      if(player.hp <= 0){
-        player.x = 100;
-        player.y = 100;
-        player.hp = 10;
+      if(player.hp <= 0 && !this.client){
+        this.spawnPointCounter = (this.spawnPointCounter + 1) % this.spawnPoints.length;
+        let spawnPoint = this.spawnPoints[this.spawnPointCounter];
+        player.respawn(spawnPoint[0], spawnPoint[1]);
       }
       player.update(this);
     }
@@ -123,11 +131,15 @@ export default class World {
       "players": {},
       "bullets": [],
       "walls": [],
+      "spawnPoints": [],
+      "spawnPointCounter": this.spawnPointCounter
     };
-    if (initial) for (let wall of this.walls) res["walls"].push(wall.serialize());
+    if (initial){
+      for (let wall of this.walls) res["walls"].push(wall.serialize());
+      for (let spawnPoint of this.spawnPoints) res["spawnPoints"].push(spawnPoint);
+    }
     for (let bulletID in this.bullets) res["bullets"].push(this.bullets[bulletID].serialize());
     for (let player_id in this.players) res["players"][player_id] = (this.players[player_id].serialize());
-
     return res;
   };
 
@@ -143,14 +155,16 @@ export default class World {
     // TODO: Change bullet replacement to update
     //this.bullets = {};
     for (let bullet of state.bullets) {
-      let {source, x, y, speed} = bullet;
+      let {source, x, y, speed, color} = bullet;
       if (this.players[source]){
-        this.bullets[bullet["id"]] = new Bullet(bullet["id"], source, x, y, speed, this.players[source].eyesColor)
+        this.bullets[bullet["id"]] = new Bullet(bullet["id"], source, x, y, speed, color)
       }
       else{
         delete this.bullets[bullet["id"]];
       }
-
     }
-  }
+
+    // Update spawn points counter
+    this.spawnPointCounter = state["spawnPointCounter"]
+  };
 }

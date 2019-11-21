@@ -20,18 +20,18 @@ app.use('/client-objects', express.static(__dirname + '/client-objects'));
 app.get('/', function (req, res) {
   res.sendFile('./index.html', {root: __dirname});
 });
-export let roomSize = 2;
+export let roomSize = 1;
 let rooms = {};
 
 // Define socket io events:
-var roomnumber = 0;
+let roomnumber = 0;
 let roomName = "room-" + roomnumber;
 io.on('connection', function (socket) {
 
   // Get player params
   let playerInfo = {
     playerName: socket.handshake.query.playerName,
-    color: socket.handshake.query.color
+    skin: socket.handshake.query.skin
   };
 
   // Handle room logic:
@@ -39,7 +39,7 @@ io.on('connection', function (socket) {
   let room = rooms[roomName];
 
   // If room exists and full
-  if (!room || room.getNumPlayers() >= roomSize) {
+  if (!room || room.getNumPlayers() >= roomSize || room.started) {
     roomnumber++;
     roomName = "room-" + roomnumber;
     rooms[roomName] = new Room(roomName, io);

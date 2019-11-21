@@ -6,8 +6,9 @@ export default class SnowFlake {
     this.speed = {x: (-5 + Math.random() * 10), y: (1 + Math.random() * 5)};
     this.size = 2 + Math.random() * 6;
     this.opacity = Math.random();
-    this.rotationSpeed = Math.random() * 10;
+    this.rotationSpeed = Math.random() * 5;
     this.rotation = Math.random() * 180;
+
   }
 
   draw = (ctx) => {
@@ -30,5 +31,6 @@ export default class SnowFlake {
       this.y = -100;
       this.x = Math.random() * window.innerWidth;
     }
+    this.rotation += this.rotationSpeed;
   }
 }

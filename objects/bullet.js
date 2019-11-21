@@ -40,6 +40,7 @@ export default class Bullet extends Rectangle{
     res.y = this.y;
     res.damage = this.damage;
     res.speed = this.speed;
+    res.color = this.color;
     return res;
   };
 }

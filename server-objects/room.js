@@ -7,6 +7,8 @@ let baseWidth = 1853;
 let baseHeight = 951;
 let initialState = {
   players: {},
+  spawnPoints : [[100, 100], [baseWidth-100, 100], [baseWidth/3, 100], [2*baseWidth/3, 100]],
+
   walls: {
     "leftWall": {x: 0, y: 0, width: 50, height: baseHeight, color: "#444"},
     "topWall": {x: 0, y: 0, width: baseWidth, height: 50, color: "#444"},
@@ -51,6 +53,7 @@ let initialState = {
 export default class Room {
   world = null;
   updateInterval = null;
+  started = false;
 
   constructor(id, io) {
     this.id = id;
@@ -65,7 +68,7 @@ export default class Room {
 
   join(socket, playerInfo) {
     socket.join(this.id);
-    this.world.players[socket.id] = new Player(socket.id, 100, 100, playerInfo.playerName, playerInfo.color);
+    this.world.players[socket.id] = new Player(socket.id, 100, 100, playerInfo.playerName, playerInfo.skin);
     this.broadcast("connectedToRoom", {"id": this.id, "numConnected": this.getNumPlayers(), "roomSize": roomSize});
   }
 
@@ -97,6 +100,7 @@ export default class Room {
   startGame = () => {
     this.broadcast('startGame', this.world.serialize(true));
     this.world.reset();
+    this.started = true;
     setInterval(this.update, 15);
   };
 

@@ -1,6 +1,6 @@
 import Bullet from "./bullet.js";
 import Rectangle from "./rectangle.js";
-import {generateID, LightenDarkenColor, PickEyesColor} from "./utils.js";
+import SkinManager from "../client-objects/skin-manager.js";
 
 const g = 0.5;  //TODO
 
@@ -24,14 +24,13 @@ export default class Player extends Rectangle {
   controls = {};
   mousePosition = {x: 250, y: 250};
 
-  constructor(id, x, y, name, color) {
+  constructor(id, x, y, name, skin) {
     let size = 50;
     super(x, y, size, size);
     this.size = size;
     this.id = id;
     this.name = name;
-    this.color = color;
-    this.eyesColor = PickEyesColor(this.color);
+    this.skin = skin;
   }
 
   draw = (ctx) => {
@@ -42,14 +41,14 @@ export default class Player extends Rectangle {
     ctx.fillText(this.name + " : " + this.hp, this.x + (this.size / 2) - (stringLen / 2), this.y - 10);
 
     ctx.beginPath();
-    ctx.fillStyle = this.color;
+    ctx.fillStyle = SkinManager.skins[this.skin].body;
     ctx.fillRect(this.x, this.y, this.size, this.size);
     this.drawEyes(ctx);
     ctx.stroke();
   };
 
   drawEyes = (ctx) => {
-    ctx.fillStyle = this.eyesColor;
+    ctx.fillStyle = SkinManager.skins[this.skin].eyes;
     ctx.fillRect(this.x + this.eyes.x, this.y + this.eyes.y, this.eyes.size, this.eyes.size);
     ctx.fillRect(this.x + this.eyes.x + this.eyes.size + this.eyes.margin, this.y + this.eyes.y, this.eyes.size, this.eyes.size);
   };
@@ -125,7 +124,7 @@ export default class Player extends Rectangle {
       let speed = {x: dir.x * this.bulletSpeed, y: dir.y * this.bulletSpeed};
 
       let bulletID = this.id + this.bulletIndex;
-      let bullet = new Bullet(bulletID, this.id, this.x + this.size / 2, this.y + this.size / 2, speed, this.eyesColor);
+      let bullet = new Bullet(bulletID, this.id, this.x + this.size / 2, this.y + this.size / 2, speed, SkinManager.skins[this.skin].eyes);
       this.bulletIndex++;
       world.addBullet(bullet);
     }
@@ -161,6 +160,11 @@ export default class Player extends Rectangle {
     this.eyes.y += (eyeY - (this.y + this.eyes.y)) * 0.3;
   };
 
+  respawn = (x, y) => {
+    [this.x, this.y] = [x, y];
+    this.hp = 10;
+  };
+
   serialize = () => {
     let res = {};
     res.id = this.id;
@@ -175,8 +179,7 @@ export default class Player extends Rectangle {
     res.fireTimer = this.fireTimer;
     res.mousePosition = this.mousePosition;
     res.controls = this.controls;
-    res.color = this.color;
-    res.eyesColor = this.eyesColor;
+    res.skin = this.skin;
     res.name = this.name;
     res.bulletIndex = this.bulletIndex;
     res.score = this.score;
@@ -196,10 +199,9 @@ export default class Player extends Rectangle {
     this.fireTimer = state.fireTimer;
     this.mousePosition = state.mousePosition;
     this.controls = state.controls;
-    this.color = state.color;
-    this.eyesColor = state.eyesColor;
+    this.skin = state.skin;
     this.bulletIndex = state.bulletIndex;
     this.name = state.name;
     this.score = state.score;
-  }
+  };
 };

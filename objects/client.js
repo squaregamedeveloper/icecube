@@ -1,6 +1,7 @@
 import DefaultBackground from "../client-objects/default-background.js";
 import World from './world.js';
 import Controls from './controls.js';
+import SkinManager from "../client-objects/skin-manager.js";
 
 let baseWidth = 1853;
 let baseHeight = 951;
@@ -22,6 +23,10 @@ let background = document.getElementById('background');
 let backgroundManager = new DefaultBackground(background);
 backgroundManager.start();
 
+let skinSelector = document.getElementById('skinSelector');
+let skinManager = new SkinManager(skinSelector);
+skinManager.displaySkins();
+
 let canvas = document.getElementById("canvas");
 canvas.setAttribute('width', document.body.clientWidth); //max width
 canvas.setAttribute('height', document.body.clientHeight); //max height
@@ -36,22 +41,27 @@ document.addEventListener("keydown", controls.keyDown);
 
 document.getElementById("playButton").onclick = () => {
   let playerName = document.getElementById("name").value;
-  let color = document.getElementById("color").value;
+  let skin = skinManager.selectedSkin;
+
+  if (playerName.length < 3){
+    document.getElementById("name").style.border = "2px solid red";
+    return;
+  }
 
   //Connecting To socket.io
-  socket = io.connect(window.location.host, {query: `playerName=${playerName}&color=${color}`});
+  socket = io.connect(window.location.host, {query: `playerName=${playerName}&skin=${skin}`});
 
   socket.on("connectedToRoom", (data) => {
     loader.style.display = 'block';
     loginSection.style.display = 'none';
     room_id = data.id;
-    roomSizeSection.innerHTML = `${data.numConnected} / ${data.roomSize} Players connected`;
+    roomSizeSection.innerHTML = `${data.numConnected} / ${data.roomSize} <br/> Players connected`;
   });
 
   socket.on("startGame", (data) => {
     loader.style.display = "none";
     gameSection.style.display = 'block';
-    world = new World(data);
+    world = new World(data, true);
     window.requestAnimationFrame(loop);
   });
 
