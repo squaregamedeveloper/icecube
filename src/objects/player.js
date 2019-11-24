@@ -5,35 +5,37 @@ import SkinManager from "../client-objects/skin-manager.js";
 const g = 0.5;  //TODO
 
 export default class Player extends Rectangle {
-  bulletSpeed = 15;
-  fireInterval = 30;
-  friction = 0.9;
-  speed = {x: 7, y: -15};
-  jumpTimeout = null;
-  hp = 10;
-  bulletIndex = 0;
-  score = 0;
 
-  eyes = {x: 10, y: 10, size: 10, margin: 5};
-  velocity = {x: 0, y: 0};
-  isOnGround = false;
-  isOnWall = false;
-  wallDir = null;
-  fireTimer = 0;
-  lastControls = {};
-  controls = {};
-  mousePosition = {x: 250, y: 250};
 
   constructor(id, x, y, name, skin) {
     let size = 50;
     super(x, y, size, size);
+
+    this.bulletSpeed = 15;
+    this.fireInterval = 30;
+    this.friction = 0.9;
+    this.speed = {x: 7, y: -15};
+    this.jumpTimeout = null;
+    this.hp = 10;
+    this.bulletIndex = 0;
+    this.score = 0;
+    this.eyes = {x: 10, y: 10, size: 10, margin: 5};
+    this.velocity = {x: 0, y: 0};
+    this.isOnGround = false;
+    this.isOnWall = false;
+    this.wallDir = null;
+    this.fireTimer = 0;
+    this.lastControls = {};
+    this.controls = {};
+    this.mousePosition = {x: 250, y: 250};
+
     this.size = size;
     this.id = id;
     this.name = name;
     this.skin = skin;
   }
 
-  draw = (ctx) => {
+  draw(ctx){
     // Draw the player name:
     ctx.font = "10px Arial";
     ctx.fillStyle = 'black';
@@ -47,21 +49,21 @@ export default class Player extends Rectangle {
     ctx.stroke();
   };
 
-  drawEyes = (ctx) => {
+  drawEyes(ctx){
     ctx.fillStyle = SkinManager.skins[this.skin].eyes;
     ctx.fillRect(this.x + this.eyes.x, this.y + this.eyes.y, this.eyes.size, this.eyes.size);
     ctx.fillRect(this.x + this.eyes.x + this.eyes.size + this.eyes.margin, this.y + this.eyes.y, this.eyes.size, this.eyes.size);
   };
 
-  updateControls = (controls) => {
+  updateControls(controls) {
     this.controls = controls;
   };
 
-  updateMousePosition = (mousePosition) => {
+  updateMousePosition(mousePosition) {
     this.mousePosition = mousePosition;
   };
 
-  update = (world) => {
+  update(world) {
     if (this.controls.left) this.velocity.x = -this.speed.x;
     else if (this.controls.right) this.velocity.x = this.speed.x;
     else this.velocity.x *= this.friction;
@@ -136,12 +138,12 @@ export default class Player extends Rectangle {
     this.lastControls = this.controls;
   };
 
-  takeDamage = (damage) => {
+  takeDamage(damage) {
     this.hp -= damage;
     return this.hp;
   };
 
-  updateEyes = () => {
+  updateEyes() {
     let eyeX, eyeY;
     let y = this.mousePosition.y - this.eyes.size;
 
@@ -160,12 +162,12 @@ export default class Player extends Rectangle {
     this.eyes.y += (eyeY - (this.y + this.eyes.y)) * 0.3;
   };
 
-  respawn = (x, y) => {
+  respawn(x, y) {
     [this.x, this.y] = [x, y];
     this.hp = 10;
   };
 
-  serialize = () => {
+  serialize() {
     let res = {};
     res.id = this.id;
     res.x = this.x;
@@ -186,7 +188,7 @@ export default class Player extends Rectangle {
     return res;
   };
 
-  updateState = (state) => {
+  updateState(state){
     this.id = state.id;
     this.x = state.x;
     this.y = state.y;

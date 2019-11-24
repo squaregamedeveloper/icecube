@@ -5,15 +5,15 @@ export default class SkinManager{
     this.selector = selector;
   }
 
-  selectSkin = (skin) => {
+  selectSkin(skin) {
     this.selectedSkin = skin;
     this.hideSkinSelector();
   };
 
-  hideSkinSelector = () => {this.selector.style.display = "none";};
-  showSkinSelector = () => {this.selector.style.display = "flex";};
+  hideSkinSelector()  {this.selector.style.display = "none";}
+  showSkinSelector()  {this.selector.style.display = "flex";}
 
-  displaySkins = () => {
+  displaySkins() {
     this.selector.innerHTML = "";
     for(let skin in SkinManager.skins){
       let eyeColor = SkinManager.skins[skin].eyes;
@@ -32,7 +32,7 @@ export default class SkinManager{
     this.attachListeners();
   };
 
-  attachListeners = () => {
+  attachListeners() {
     let skinElements = document.getElementsByClassName('skin');
     for (let skinElement of skinElements) {
       skinElement.addEventListener('click', ()=>(this.selectSkin(skinElement.dataset['name'])));

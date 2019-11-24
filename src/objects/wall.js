@@ -6,12 +6,12 @@ export default class Wall extends Rectangle {
     this.color = color;
   }
 
-  draw = (ctx) => {
+  draw(ctx) {
     ctx.fillStyle = this.color;
     ctx.fillRect(this.x, this.y, this.width, this.height);
   };
 
-  serialize = () => {
+  serialize() {
     let res = {};
     res.id = this.id;
     res.x = this.x;

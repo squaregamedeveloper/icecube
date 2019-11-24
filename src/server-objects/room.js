@@ -51,11 +51,12 @@ let initialState = {
   rooms with different sizes
  */
 export default class Room {
-  world = null;
-  updateInterval = null;
-  started = false;
+
 
   constructor(id, io) {
+    this.updateInterval = null;
+    this.started = false;
+
     this.id = id;
     this.io = io;
     this.world = new World(initialState);
@@ -84,27 +85,27 @@ export default class Room {
     this.world.updatePlayerControls(userID, controls);
   }
 
-  update = () => {
+  update() {
     this.world.update();
     this.updateRemoteState();
   };
 
-  broadcast = (event, msg)  => {
+  broadcast(event, msg) {
     this.io.sockets.in(this.id).emit(event, msg);
   };
 
-  updateRemoteState = () => {
+  updateRemoteState() {
     this.broadcast('updateState', this.world.serialize());
   };
 
-  startGame = () => {
+  startGame() {
     this.broadcast('startGame', this.world.serialize(true));
     this.world.reset();
     this.started = true;
-    setInterval(this.update, 15);
+    setInterval(()=> this.update(), 15);
   };
 
-  clearUpdateInterval = () => {
+  clearUpdateInterval() {
     clearInterval(this.updateInterval);
   };
 }

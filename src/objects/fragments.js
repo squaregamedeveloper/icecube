@@ -1,13 +1,16 @@
 export default class FragmentCluster {
-  frags = [];
-  maxSize = 6;
-  speed = 5;
-  rotationSpeed = 7;
-  alpha = 255;
-  lastUpdate = Date.now();
-  refreshRate = 15;
+
 
   constructor(x, y, intersectionDirections, count = 10, alphaDecay = 6) {
+
+    this.frags = [];
+    this.maxSize = 6;
+    this.speed = 5;
+    this.rotationSpeed = 7;
+    this.alpha = 255;
+    this.lastUpdate = Date.now();
+    this.refreshRate = 15;
+
     this.alphaDecay = alphaDecay;
     for (let i = 0; i <= count; i++) {
       let speed = {x: 0, y: 0};
@@ -29,11 +32,11 @@ export default class FragmentCluster {
     }
   }
 
-  randomInRange = (a, b) => {
+  randomInRange(a, b) {
     return Math.random() * (b - a) + a;
   };
 
-  update = () => {
+  update() {
     // Calculate time delta for animation:
     let now = Date.now();
     let delta = (now - this.lastUpdate) / this.refreshRate;
@@ -48,9 +51,9 @@ export default class FragmentCluster {
     this.alpha -= this.alphaDecay;
   };
 
-  isFinished = () => (this.alpha <= 20);
+  isFinished() { return this.alpha <= 20; };
 
-  draw = (ctx) => {
+  draw(ctx) {
     for (let f of this.frags) {
       ctx.save();
       ctx.beginPath();

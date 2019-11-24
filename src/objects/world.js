@@ -4,12 +4,14 @@ import Bullet from "./bullet.js";
 import FragmentCluster from "./fragments.js"
 
 export default class World {
-  refreshRate = 15;
-  lastUpdate = Date.now();
-  spawnPointCounter = 0;
+
 
   constructor(initialState, isClient) {
     this.client = isClient;
+
+    this.refreshRate = 15;
+    this.lastUpdate = Date.now();
+    this.spawnPointCounter = 0;
 
     this.walls = [];
     for (let wall_id in initialState.walls) {
@@ -25,23 +27,23 @@ export default class World {
 
     this.players = {};
     for (let player_id in initialState.players) {
-      let {x, y, name, color} = initialState.players[player_id];
-      this.players[player_id] = new Player(player_id, x, y, name, color);
+      let {x, y, name, skin} = initialState.players[player_id];
+      this.players[player_id] = new Player(player_id, x, y, name, skin);
     }
 
     this.bullets = {};
     this.fragmentClusters = [];
   }
 
-  reset = () => {
+  reset() {
     this.lastUpdate = Date.now();
   };
 
-  addBullet = (bullet) => {
+  addBullet(bullet) {
     this.bullets[bullet.id] = bullet;
   };
 
-  updatePlayerPositions = () => {
+  updatePlayerPositions() {
     for (let player_id in this.players) {
       let player = this.players[player_id];
       // Reset player;
@@ -54,7 +56,7 @@ export default class World {
     }
   };
 
-  updatefragmentClusters = () => {
+  updatefragmentClusters(){
     for (let i = 0; i < this.fragmentClusters.length; i++) {
       let f = this.fragmentClusters[i];
       f.update();
@@ -65,7 +67,7 @@ export default class World {
     }
   };
 
-  updateBulletsPosition = () => {
+  updateBulletsPosition() {
     for (let bulletID in this.bullets) {
       let b = this.bullets[bulletID];
       b.update(this);
@@ -92,14 +94,14 @@ export default class World {
     }
   };
 
-  updatePlayerControls = (playerID, controls) => {
+  updatePlayerControls(playerID, controls) {
     this.players[playerID].updateControls(controls);
   };
-  updatePlayerMouse = (playerID, mousePosition) => {
+  updatePlayerMouse(playerID, mousePosition) {
     this.players[playerID].updateMousePosition(mousePosition);
   };
 
-  update = () => {
+  update() {
     // Calculate time delta for animation:
     let now = Date.now();
     this.delta = (now - this.lastUpdate) / this.refreshRate;
@@ -110,14 +112,14 @@ export default class World {
     this.updatePlayerPositions();
   };
 
-  draw = (ctx) => {
+  draw(ctx) {
     this.walls.forEach((w) => w.draw(ctx));
     this.fragmentClusters.forEach((fc) => fc.draw(ctx));
     for (let bulletID in this.bullets) this.bullets[bulletID].draw(ctx);
     for (let player_id in this.players) this.players[player_id].draw(ctx);
   };
 
-  intersectsWalls = (rect) => {
+  intersectsWalls(rect) {
     let intersects = null;
     for (let w of this.walls) {
       intersects = w.intersects(rect);
@@ -126,7 +128,7 @@ export default class World {
     return intersects;
   };
 
-  serialize = (initial = false) => {
+  serialize(initial = false) {
     let res = {
       "players": {},
       "bullets": [],
@@ -143,7 +145,7 @@ export default class World {
     return res;
   };
 
-  updateState = (state) => {
+  updateState(state) {
     for (let player_id in state['players']) {
       this.players[player_id].updateState(state['players'][player_id])
     }

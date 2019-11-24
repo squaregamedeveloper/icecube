@@ -1,13 +1,13 @@
-import DefaultBackground from "../client-objects/default-background.js";
-import World from './world.js';
-import Controls from './controls.js';
-import SkinManager from "../client-objects/skin-manager.js";
+import DefaultBackground from "./default-background.js";
+import World from '../objects/world.js';
+import Controls from '../objects/controls.js';
+import SkinManager from "./skin-manager.js";
 
 let baseWidth = 1853;
 let baseHeight = 951;
 let scale = 1;
 let mousePosition = {x: 250, y: 250};
-let controls = new Controls();
+let controls = new Controls(scale);
 let socket;
 let world;
 let room_id;
@@ -31,13 +31,6 @@ let canvas = document.getElementById("canvas");
 canvas.setAttribute('width', document.body.clientWidth); //max width
 canvas.setAttribute('height', document.body.clientHeight); //max height
 let context = canvas.getContext("2d");
-
-
-document.addEventListener("mousemove", (e) => { mousePosition = {x: e.clientX / scale, y: e.clientY / scale};});
-document.addEventListener("mousedown", controls.mouseDown);
-document.addEventListener("mouseup", controls.mouseUp);
-document.addEventListener("keyup", controls.keyUp);
-document.addEventListener("keydown", controls.keyDown);
 
 document.getElementById("playButton").onclick = () => {
   let playerName = document.getElementById("name").value;
@@ -104,7 +97,7 @@ function loop(a) {
     old_controls = new_controls;
   }
   setTimeout(() => {
-    socket.emit("updateMouse", mousePosition);
+    socket.emit("updateMouse", controls.mousePosition);
   }, mouseRefreshRate);
   // Update server with the mouse position:
 

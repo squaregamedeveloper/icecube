@@ -1,4 +1,5 @@
 {
+  "exec": "npm run dev",
   "events": {
     "restart": "fuser -k 3000/tcp",
     "crash": "fuser -k 3000/tcp"

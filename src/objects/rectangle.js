@@ -6,7 +6,7 @@ export default class Rectangle {
     this.height = height;
   }
 
-  intersects = (rect) => {
+  intersects(rect) {
     let pos = {
       "x": this.x,
       "y": this.y,

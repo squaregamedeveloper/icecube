@@ -1,19 +1,21 @@
 import Rectangle from "./rectangle.js";
 export default class Bullet extends Rectangle{
-  rotationSpeed = 20;
-  rotation = Math.random() * 180;
-  speed = {x: 0, y: 0};
-  damage = 5;
 
   constructor(id, source, x, y, speed, color) {
     super(x, y, Bullet.size, Bullet.size);
+
+    this.rotationSpeed = 20;
+    this.rotation = Math.random() * 180;
+    this.speed = {x: 0, y: 0};
+    this.damage = 5;
+
     this.id = id;
     this.source = source;
     this.speed = speed;
     this.color = color;
   }
 
-  draw = (ctx) => {
+  draw(ctx){
     ctx.save();
     ctx.beginPath();
     // move the rotation point to the center of the rect
@@ -26,13 +28,13 @@ export default class Bullet extends Rectangle{
     ctx.restore();
   };
 
-  update = (world) => {
+  update(world){
     this.x += this.speed.x * world.delta;
     this.y += this.speed.y * world.delta;
     this.rotation -= this.rotationSpeed;
   };
 
-  serialize = () => {
+  serialize(){
     let res = {};
     res.id = this.id;
     res.source = this.source;
