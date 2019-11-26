@@ -61,7 +61,7 @@ export default class FragmentCluster {
       ctx.translate(f.x + f.size / 2, f.y + f.size / 2);
       // rotate the rect
       ctx.rotate(f.rotation * Math.PI / 180);
-      ctx.fillStyle = `#555${(this.alpha).toString(16)}`;
+      ctx.fillStyle = `#555555${(this.alpha).toString(16)}`;
       ctx.fillRect(-f.size / 2, -f.size / 2, f.size, f.size);
       ctx.stroke();
       ctx.restore();

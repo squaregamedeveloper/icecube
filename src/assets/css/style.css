@@ -19,11 +19,13 @@ time, mark, audio, video, canvas, input {
     vertical-align: baseline;
     box-sizing: border-box;
 }
+
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
     display: block;
 }
+
 html, body {
     line-height: 1;
     height: 100%;
@@ -31,17 +33,21 @@ html, body {
     background: #d4f1f9;
     font-family: 'Jura', sans-serif;
 }
+
 ol, ul {
     list-style: none;
 }
+
 blockquote, q {
     quotes: none;
 }
+
 blockquote:before, blockquote:after,
 q:before, q:after {
     content: '';
     content: none;
 }
+
 table {
     border-collapse: collapse;
     border-spacing: 0;
@@ -51,22 +57,40 @@ table {
 /*                                         GLOBAL                                         */
 /*========================================================================================*/
 
-.logo{
+.logo {
     font-size: 30px;
     font-weight: bold;
     text-align: center;
     margin-bottom: 20px;
-    color:#94c6e3;
+    color: #94c6e3;
     font-family: 'Jura', sans-serif;
 }
-.logo span{color: #101e5a;}
+
+.logo span {
+    color: #101e5a;
+}
 
 /*========================================================================================*/
 /*                                         BG/FG                                          */
 /*========================================================================================*/
 
-#background{position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;}
-#foreground{position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;}
+#background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+#foreground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+}
 
 /*========================================================================================*/
 /*                                     LOGIN SECTION                                      */
@@ -85,7 +109,6 @@ table {
     border: 1px solid #75aedc;
 }
 
-
 #login input[type="text"] {
     display: block;
     width: 100%;
@@ -93,19 +116,93 @@ table {
     border: 1px solid #000;
     border-radius: 0;
 }
+
 #login input[type="color"] {
     display: block;
     width: 100px;
     margin: 20px auto;
     border-radius: 0;
 }
-#login button{
+
+#login button {
     display: block;
-    margin: 0 auto;
+    margin: 15px auto;
     width: 200px;
     padding: 10px;
-    border: 1px solid #000;
+    cursor: pointer;
+    border: 0;
+    background: #26C5FF;
     border-radius: 0;
+    color: #FFF;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+#login button:hover {background: #006bce;}
+
+#skinSlider {
+    position: relative;
+    width: 100%;
+    padding: 20px 0;
+}
+#skinSlider .arrow {
+    position: absolute;
+    top:50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    border: solid #26C5FF;
+    border-width: 0 5px 5px 0;
+    display: inline-block;
+    padding: 5px;
+}
+
+#skinSlider .arrow:hover {
+    border-color: #006bce;
+}
+
+
+#skinSlider .right {
+    transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+    right: 3px;
+}
+
+#skinSlider .left {
+    transform: rotate(135deg);
+    -webkit-transform: rotate(135deg);
+    left: 3px;
+}
+
+#skinSlider .skin {
+    position: relative;
+    display: block;
+    width: 50px;
+    height: 50px;
+    margin: 0 auto;
+    -webkit-box-shadow: 0px 0px 6px 2px rgba(136,136,136,1);
+    -moz-box-shadow: 0px 0px 6px 2px rgba(136,136,136,1);
+    box-shadow: 0px 0px 6px 2px rgba(136,136,136,1);
+}
+
+#skinSlider .skin .eyes {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+}
+
+#skinSlider .skin .eyes div {
+    float: right;
+    margin-left: 5px;
+    width: 10px;
+    height: 10px;
+}
+
+#skinSlider .skin h3 {
+    position: absolute;
+    width: 100%;
+    bottom:-20px;
+    font-size: 12px;
+    color: #000000;
+    text-align: center;
 }
 
 /*========================================================================================*/
@@ -120,7 +217,8 @@ table {
     z-index: 50;
     transform: translateX(-50%) translateY(-50%);
 }
-#loader img{
+
+#loader img {
     display: block;
     width: 100px;
     height: 100px;
@@ -139,8 +237,8 @@ table {
 /*                                      SKIN SECTION                                      */
 /*========================================================================================*/
 
-#skinSelector{
-    display: flex;
+#skinSelector {
+    display: none;
     justify-content: space-around;
     align-items: flex-start;
     flex-wrap: wrap;
@@ -154,18 +252,32 @@ table {
     background: #333;
 }
 
-#skinSelector .skin {position: relative; width: 70px; height: 70px; margin: 10px; margin-bottom: 30px;}
-#skinSelector .skin .eyes{position: absolute; right: 5px; top: 5px;}
-#skinSelector .skin .eyes div{float: right; margin-left: 7px; width: 13px; height: 13px;}
-#skinSelector .skin h3{position: absolute; width: 70px; bottom: -15px; font-size: 12px; color: #FFF; text-align: center;}
-#skinSelector .skin:hover {outline: 3px solid #555;}
-
 /*========================================================================================*/
 /*=                                     GAME SECTION                                     =*/
 /*========================================================================================*/
 
-#game{display: none;}
-#game .logo{position: absolute; top: 0.3vw; font-size: 2vw; left: 50%; transform: translateX(-50%);}
+#game {
+    display: none;
+}
 
-#scoreBoard{position: absolute; right: 4vw; top: 4vw; padding: 20px; background: #FFF; opacity: 0.5;}
-#scoreBoard span{display: block; font-size: 1.3vw;}
+#game .logo {
+    position: absolute;
+    top: 0.3vw;
+    font-size: 2vw;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#scoreBoard {
+    position: absolute;
+    right: 4vw;
+    top: 4vw;
+    padding: 20px;
+    background: #FFF;
+    opacity: 0.5;
+}
+
+#scoreBoard span {
+    display: block;
+    font-size: 1.3vw;
+}

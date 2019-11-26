@@ -37,10 +37,10 @@ export default class Player extends Rectangle {
 
   draw(ctx){
     // Draw the player name:
-    ctx.font = "10px Arial";
+    ctx.font = "12px Arial";
     ctx.fillStyle = 'black';
     let stringLen = this.name.length * 7;
-    ctx.fillText(this.name + " : " + this.hp, this.x + (this.size / 2) - (stringLen / 2), this.y - 10);
+    ctx.fillText(this.name, this.x + (this.size / 2) - (stringLen / 2), this.y - 10);
 
     ctx.beginPath();
     ctx.fillStyle = SkinManager.skins[this.skin].body;

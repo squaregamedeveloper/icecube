@@ -19,7 +19,7 @@ class Client{
 
   play(){
     let playerName = document.getElementById("name").value;
-    let skin = skinManager.selectedSkin;
+    let skin = skinManager.selectSkin();
 
     if (playerName.length < 3){
       document.getElementById("name").style.border = "2px solid red";
@@ -56,7 +56,7 @@ class Client{
     scoreList.sort((a, b) => b.score - a.score);
     scoreBoard.innerHTML = `<span>${room_id}</span><br/>`;
     for(let player of scoreList){
-      scoreBoard.innerHTML += `<span class="scoreLine" style="color:${this.world.players[player.id].color}">${player.name} : ${player.score}</span>`;
+      scoreBoard.innerHTML += `<span class="scoreLine">${player.name} : ${player.score}</span>`;
     }
   }
 
@@ -106,9 +106,9 @@ let background = document.getElementById('background');
 let backgroundManager = new DefaultBackground(background);
 backgroundManager.start();
 
-let skinSelector = document.getElementById('skinSelector');
+let skinSelector = document.getElementById('skinSlider');
 let skinManager = new SkinManager(skinSelector);
-skinManager.displaySkins();
+skinManager.displaySkin();
 
 let canvas = document.getElementById("canvas");
 canvas.setAttribute('width', document.body.clientWidth); //max width
