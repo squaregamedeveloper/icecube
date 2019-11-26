@@ -1,12 +1,10 @@
 export default class Controls {
-  constructor(gameScale) {
+  constructor() {
     this.leftKeyCodes = [65, 97, 37];
     this.rightKeyCodes = [68, 100, 39];
     this.upKeyCodes = [87, 119, 38];
     this.downKeyCodes = [83, 115, 40];
     this.mousePosition = {x: 250, y: 250};
-
-    this.scale = gameScale;
 
     [this.left, this.down, this.up, this.right, this.shoot] = Array(5).fill(false);
 
@@ -28,7 +26,7 @@ export default class Controls {
   };
 
   updateMousePos(event){
-    let scaleX = document.body.clientWidth / 1853;
+    let scaleX = document.body.clientWidth / 1853; //TODO: change
     let scaleY = document.body.clientHeight / 951;
     let finalScale = Math.min(scaleX, scaleY);
     this.mousePosition = {x: event.clientX / finalScale, y: event.clientY / finalScale};

@@ -22,6 +22,8 @@ export default class Bullet extends Rectangle{
     ctx.translate(this.x + Bullet.size / 2, this.y + Bullet.size / 2);
     // rotate the rect
     ctx.rotate(this.rotation * Math.PI / 180);
+    ctx.fillStyle = "black";
+    ctx.fillRect((-Bullet.size / 2) - 1 , (-Bullet.size / 2) - 1, Bullet.size + 2, Bullet.size + 2);
     ctx.fillStyle = this.color;
     ctx.fillRect(-Bullet.size / 2, -Bullet.size / 2, Bullet.size, Bullet.size);
     ctx.stroke();
