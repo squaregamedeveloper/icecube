@@ -30,18 +30,21 @@ export default class SkinManager {
 
   displaySkin() {
     this.selector.querySelector("#selectedSkin").innerHTML = "";
-    let skin = this.skinList[this.selectedSkin];
-    let eyeColor = SkinManager.skins[skin].eyes;
-    let bodyColor = SkinManager.skins[skin].body;
-    this.selector.querySelector("#selectedSkin").innerHTML += `
-      <a class="skin" data-name="${skin}" style="background: ${bodyColor}">
+    for (let i = this.selectedSkin - 2; i <= this.selectedSkin + 2; i++ ) {
+      let index = (i + this.skinList.length) % this.skinList.length;
+      let skin = this.skinList[index];
+      let eyeColor = SkinManager.skins[skin].eyes;
+      let bodyColor = SkinManager.skins[skin].body;
+      this.selector.querySelector("#selectedSkin").innerHTML += `
+      <a class="skin ${(i === this.selectedSkin)?'currentSkin':''}" data-name="${skin}" style="background: ${bodyColor}">
           <div class="eyes">
               <div style="background: ${eyeColor}"></div>
               <div style="background: ${eyeColor}"></div>
           </div>
-          <h3>${skin}</h3>
+          ${(i === this.selectedSkin)?`<h3>${skin}</h3>`:''}
       </a>
-    `;
+       `;
+    }
   };
 
   attachListeners() {

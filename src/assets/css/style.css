@@ -143,6 +143,7 @@ table {
     position: relative;
     width: 100%;
     padding: 20px 0;
+    text-align: center;
 }
 #skinSlider .arrow {
     position: absolute;
@@ -174,13 +175,20 @@ table {
 
 #skinSlider .skin {
     position: relative;
-    display: block;
-    width: 50px;
-    height: 50px;
-    margin: 0 auto;
+    display: inline-block;
+    width: 35px;
+    height: 35px;
+    margin: 0 2px;
     -webkit-box-shadow: 0px 0px 6px 2px rgba(136,136,136,1);
     -moz-box-shadow: 0px 0px 6px 2px rgba(136,136,136,1);
     box-shadow: 0px 0px 6px 2px rgba(136,136,136,1);
+    transition: all 0s ease 0s;
+ ;
+}
+
+#skinSlider .currentSkin {
+    width: 50px!important;
+    height: 50px!important;
 }
 
 #skinSlider .skin .eyes {
