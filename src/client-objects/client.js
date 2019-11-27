@@ -79,12 +79,11 @@ class Client{
       this.socket.emit("updateControls", new_controls);
       this.old_controls = new_controls;
     }
-    setTimeout(() => {
-      this.socket.emit("updateMouse", controls.mousePosition);
-    }, this.mouseRefreshRate);
+    setTimeout(() => this.socket.emit("updateMouse", controls.mousePosition), this.mouseRefreshRate);
     // Update server with the mouse position:
 
     // Update
+    this.world.updatePlayerControls(this.socket.id, new_controls);
     this.world.update();
     this.updateScoreBoard();
 
