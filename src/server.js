@@ -20,7 +20,7 @@ app.use('/client-objects', express.static(__dirname + '/client-objects'));
 app.get('/', function (req, res) {
   res.sendFile('./index.html', {root: __dirname});
 });
-export let roomSize = 1;
+export let roomSize = 2;
 let rooms = {};
 
 // Define socket io events:
