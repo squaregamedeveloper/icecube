@@ -83,7 +83,7 @@ class Client{
     // Update server with the mouse position:
 
     // Update
-    this.world.updatePlayerControls(this.socket.id, new_controls);
+    //this.world.updatePlayerControls(this.socket.id, new_controls);
     this.world.update();
     this.updateScoreBoard();
 

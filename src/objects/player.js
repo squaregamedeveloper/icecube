@@ -190,8 +190,8 @@ export default class Player extends Rectangle {
 
   updateState(state){
     this.id = state.id;
-    this.x = state.x + state.velocity.x;
-    this.y = state.y + state.velocity.y;
+    this.x = state.x;
+    this.y = state.y;
     this.hp = state.hp;
     this.velocity = state.velocity;
     this.eyes = state.eyes;
