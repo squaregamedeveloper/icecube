@@ -161,7 +161,7 @@ export default class Room {
     this.world.reset();
     this.started = true;
     setInterval(() => this.update(), 15);
-    setInterval(() => this.updateRemoteState(), 50);
+    setInterval(() => this.updateRemoteState(), 15);
   };
 
   clearUpdateInterval() {
