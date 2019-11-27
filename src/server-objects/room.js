@@ -146,7 +146,6 @@ export default class Room {
 
   update() {
     this.world.update();
-    this.updateRemoteState();
   };
 
   broadcast(event, msg) {
@@ -162,6 +161,7 @@ export default class Room {
     this.world.reset();
     this.started = true;
     setInterval(() => this.update(), 15);
+    setInterval(() => this.updateRemoteState(), 50);
   };
 
   clearUpdateInterval() {
