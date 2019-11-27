@@ -1,13 +1,15 @@
 import Rectangle from "./rectangle.js";
+import SkinManager from "../client-objects/skin-manager.js";
 export default class Wall extends Rectangle {
-  constructor(id, x, y, width, height, color = "#071739") {
+  constructor(id, x, y, width, height, skin = "grey", platform=false) {
     super(x, y, width, height);
     this.id = id;
-    this.color = color;
+    this.skin = skin;
+    this.platform = platform;
   }
 
   draw(ctx) {
-    ctx.fillStyle = this.color;
+    ctx.fillStyle = SkinManager.getWallSkin(ctx, this.skin, this.x, this.y);
     ctx.fillRect(this.x, this.y, this.width, this.height);
   };
 
@@ -18,7 +20,8 @@ export default class Wall extends Rectangle {
     res.y = this.y;
     res.width = this.width;
     res.height = this.height;
-    res.color = this.color;
+    res.skin = this.skin;
+    res.platform = this.platform;
     return res;
   }
 }

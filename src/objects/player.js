@@ -43,14 +43,14 @@ export default class Player extends Rectangle {
     ctx.fillText(this.name, this.x + (this.size / 2) - (stringLen / 2), this.y - 10);
 
     ctx.beginPath();
-    ctx.fillStyle = SkinManager.skins[this.skin].body;
+    ctx.fillStyle = SkinManager.playerSkins[this.skin].body;
     ctx.fillRect(this.x, this.y, this.size, this.size);
     this.drawEyes(ctx);
     ctx.stroke();
   };
 
   drawEyes(ctx){
-    ctx.fillStyle = SkinManager.skins[this.skin].eyes;
+    ctx.fillStyle = SkinManager.playerSkins[this.skin].eyes;
     ctx.fillRect(this.x + this.eyes.x, this.y + this.eyes.y, this.eyes.size, this.eyes.size);
     ctx.fillRect(this.x + this.eyes.x + this.eyes.size + this.eyes.margin, this.y + this.eyes.y, this.eyes.size, this.eyes.size);
   };
@@ -126,7 +126,7 @@ export default class Player extends Rectangle {
       let speed = {x: dir.x * this.bulletSpeed, y: dir.y * this.bulletSpeed};
 
       let bulletID = this.id + this.bulletIndex;
-      let bullet = new Bullet(bulletID, this.id, this.x + this.size / 2, this.y + this.size / 2, speed, SkinManager.skins[this.skin].eyes);
+      let bullet = new Bullet(bulletID, this.id, this.x + this.size / 2, this.y + this.size / 2, speed, SkinManager.playerSkins[this.skin].eyes);
       this.bulletIndex++;
       world.addBullet(bullet);
     }

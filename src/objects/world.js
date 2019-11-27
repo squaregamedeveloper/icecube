@@ -2,9 +2,9 @@ import Wall from './wall.js';
 import Player from './player.js';
 import Bullet from "./bullet.js";
 import FragmentCluster from "./fragments.js"
+import Icicle from "./icicle.js";
 
 export default class World {
-
 
   constructor(initialState, isClient) {
     this.client = isClient;
@@ -16,12 +16,12 @@ export default class World {
     this.walls = [];
     for (let wall_id in initialState.walls) {
       let id = wall_id;
-      let {x, y, width, height, color} = initialState.walls[id];
-      this.walls.push(new Wall(id, x, y, width, height, color))
+      let {x, y, width, height, skin, platform} = initialState.walls[id];
+      this.walls.push(new Wall(id, x, y, width, height, skin, platform))
     }
 
     this.spawnPoints = [];
-    for(let spawnPoint of initialState.spawnPoints){
+    for (let spawnPoint of initialState.spawnPoints) {
       this.spawnPoints.push(spawnPoint)
     }
 
@@ -33,6 +33,7 @@ export default class World {
 
     this.bullets = {};
     this.fragmentClusters = [];
+    this.icicles = [];
   }
 
   reset() {
@@ -43,11 +44,20 @@ export default class World {
     this.bullets[bullet.id] = bullet;
   };
 
+  addIcicle() {
+    let platforms = this.walls.filter(w => w.platform);
+    let index = Math.floor(Math.random() * platforms.length);
+    this.icicles.push(new Icicle(platforms[index]));
+
+    let randSpawnTime = Math.floor(Math.random() * 3000);
+    setTimeout(() => this.addIcicle(), randSpawnTime);
+  }
+
   updatePlayerPositions() {
     for (let player_id in this.players) {
       let player = this.players[player_id];
       // Reset player;
-      if(player.hp <= 0 && !this.client){
+      if (player.hp <= 0 && !this.client) {
         this.spawnPointCounter = (this.spawnPointCounter + 1) % this.spawnPoints.length;
         let spawnPoint = this.spawnPoints[this.spawnPointCounter];
         player.respawn(spawnPoint[0], spawnPoint[1]);
@@ -56,7 +66,7 @@ export default class World {
     }
   };
 
-  updatefragmentClusters(){
+  updatefragmentClusters() {
     for (let i = 0; i < this.fragmentClusters.length; i++) {
       let f = this.fragmentClusters[i];
       f.update();
@@ -79,11 +89,11 @@ export default class World {
       }
 
       for (let id in this.players) {
-        if(id === b.source) continue;
+        if (id === b.source) continue;
         let player = this.players[id];
         let intersects = player.intersects(b);
         if (intersects) {
-          if(player.takeDamage(b.damage) <= 0) {
+          if (player.takeDamage(b.damage) <= 0) {
             this.players[b.source].score++;
           }
           delete this.bullets[bulletID];
@@ -94,9 +104,23 @@ export default class World {
     }
   };
 
+  updateIcicles() {
+    for (let i = 0; i < this.icicles.length; i++) {
+      let icicle = this.icicles[i];
+      icicle.update(this);
+      let intersects = this.intersectsWalls(icicle);
+      if (intersects) {
+        this.icicles.splice(i, 1);
+        i--;
+        this.fragmentClusters.push(new FragmentCluster(icicle.x, icicle.y+icicle.height, intersects, 30, 20));
+      }
+    }
+  }
+
   updatePlayerControls(playerID, controls) {
     this.players[playerID].updateControls(controls);
   };
+
   updatePlayerMouse(playerID, mousePosition) {
     this.players[playerID].updateMousePosition(mousePosition);
   };
@@ -110,9 +134,11 @@ export default class World {
     this.updateBulletsPosition();
     this.updatefragmentClusters();
     this.updatePlayerPositions();
+    this.updateIcicles();
   };
 
   draw(ctx) {
+    this.icicles.forEach((icicle) => icicle.draw(ctx));
     this.walls.forEach((w) => w.draw(ctx));
     this.fragmentClusters.forEach((fc) => fc.draw(ctx));
     for (let bulletID in this.bullets) this.bullets[bulletID].draw(ctx);
@@ -136,7 +162,7 @@ export default class World {
       "spawnPoints": [],
       "spawnPointCounter": this.spawnPointCounter
     };
-    if (initial){
+    if (initial) {
       for (let wall of this.walls) res["walls"].push(wall.serialize());
       for (let spawnPoint of this.spawnPoints) res["spawnPoints"].push(spawnPoint);
     }
@@ -149,8 +175,8 @@ export default class World {
     for (let player_id in state['players']) {
       this.players[player_id].updateState(state['players'][player_id])
     }
-    for (let player_id in this.players){
-      if (!(player_id in state['players'])){
+    for (let player_id in this.players) {
+      if (!(player_id in state['players'])) {
         delete this.players[player_id];
       }
     }
@@ -158,10 +184,9 @@ export default class World {
     //this.bullets = {};
     for (let bullet of state.bullets) {
       let {source, x, y, speed, color} = bullet;
-      if (this.players[source]){
+      if (this.players[source]) {
         this.bullets[bullet["id"]] = new Bullet(bullet["id"], source, x, y, speed, color)
-      }
-      else{
+      } else {
         delete this.bullets[bullet["id"]];
       }
     }

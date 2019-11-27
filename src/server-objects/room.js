@@ -7,39 +7,98 @@ let baseWidth = 1853;
 let baseHeight = 951;
 let initialState = {
   players: {},
-  spawnPoints : [[100, 100], [baseWidth-100, 100], [baseWidth/3, 100], [2*baseWidth/3, 100]],
+  spawnPoints: [[100, 100], [baseWidth - 100, 100], [baseWidth / 3, 100], [2 * baseWidth / 3, 100]],
 
   walls: {
-    "leftWall": {x: 0, y: 0, width: 50, height: baseHeight, color: "#444"},
-    "topWall": {x: 0, y: 0, width: baseWidth, height: 50, color: "#444"},
-    "rightWall": {x: baseWidth - 50, y: 0, width: 50, height: baseHeight, color: "#444"},
+    "leftWall": {x: 0, y: 0, width: 50, height: baseHeight, skin: "grey"},
+    "topWall": {x: 0, y: 0, width: baseWidth, height: 50, skin: "grey"},
+    "rightWall": {x: baseWidth - 50, y: 0, width: 50, height: baseHeight, skin: "grey"},
     "bottomWall": {
       x: 0,
       y: baseHeight - 50,
       width: baseWidth,
       height: 50,
-      color: "#444"
+      skin: "grey"
+    },
+    "thickLeft": {
+      x: 0,
+      y: baseHeight / 2 - 100,
+      width: 400,
+      height: 200,
+      skin: "grey"
+    },
+    "thickRight": {
+      x: baseWidth - 400,
+      y: baseHeight / 2 - 100,
+      width: 400,
+      height: 200,
+      skin: "grey"
+    },
+    "thickTop": {
+      x: baseWidth / 2 - 100,
+      y: 50,
+      width: 200,
+      height: 250,
+      skin: "grey"
+    },
+    "squareTop1": {
+      x: baseWidth / 2 - 199,
+      y: 200,
+      width: 100,
+      height: 100,
+      skin: "grey"
+    },
+    "squareTop2": {
+      x: baseWidth / 2 + 99,
+      y: 200,
+      width: 100,
+      height: 100,
+      skin: "grey"
+    },
+    "thickBottom": {
+      x: baseWidth / 2 - 100,
+      y: baseHeight - 300,
+      width: 200,
+      height: 250,
+      skin: "grey"
+    },
+    "squareBottom1": {
+      x: baseWidth / 2 - 199,
+      y: baseHeight - 300,
+      width: 100,
+      height: 100,
+      skin: "grey"
+    },
+    "squareBottom2": {
+      x: baseWidth / 2 + 99,
+      y: baseHeight - 300,
+      width: 100,
+      height: 100,
+      skin: "grey"
     },
     "platform": {
-      x: 150,
-      y: baseHeight - 300,
-      width: 400,
+      x: 300,
+      y: baseHeight - 250,
+      width: 300,
       height: 50,
-      color: "#444"
+      skin: "ice-platform",
+      platform: true
     },
     "platform2": {
       x: baseWidth - 550,
       y: baseHeight - 300,
-      width: 400,
+      width: 300,
       height: 50,
-      color: "#444"
+      skin: "ice-platform",
+      platform: true
     },
     "platform3": {
       x: baseWidth / 2 - 200,
-      y: baseHeight - 550,
-      width: 400,
+      y: baseHeight / 2 - 25,
+      width: 300,
       height: 50,
-      color: "#444"
+      skin: "ice-platform",
+      platform: true
     },
   },
 };
@@ -102,7 +161,7 @@ export default class Room {
     this.broadcast('startGame', this.world.serialize(true));
     this.world.reset();
     this.started = true;
-    setInterval(()=> this.update(), 15);
+    setInterval(() => this.update(), 15);
   };
 
   clearUpdateInterval() {

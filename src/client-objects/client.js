@@ -19,7 +19,7 @@ class Client{
 
   play(){
     let playerName = document.getElementById("name").value;
-    let skin = skinManager.selectSkin();
+    let skin = skinManager.selectPlayerSkin();
 
     if (playerName.length < 3){
       document.getElementById("name").style.border = "2px solid red";
@@ -40,12 +40,14 @@ class Client{
       loader.style.display = "none";
       gameSection.style.display = 'block';
       this.world = new World(data, true);
+      setTimeout(() => this.world.addIcicle(), 1000);
       window.requestAnimationFrame(() => this.loop());
     });
 
     this.socket.on('updateState', (data) => {
       this.world.updateState(data);
     });
+
   }
 
   updateScoreBoard(){
@@ -108,7 +110,7 @@ backgroundManager.start();
 
 let skinSelector = document.getElementById('skinSlider');
 let skinManager = new SkinManager(skinSelector);
-skinManager.displaySkin();
+skinManager.displayPlayerSkins();
 
 let canvas = document.getElementById("canvas");
 canvas.setAttribute('width', document.body.clientWidth); //max width
