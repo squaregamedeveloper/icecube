@@ -1,5 +1,4 @@
 import World from "../objects/world.js";
-import {generateID} from "../objects/utils.js";
 import {roomSize} from "../server.js"
 import Player from "../objects/player.js";
 
@@ -7,7 +6,7 @@ let baseWidth = 1853;
 let baseHeight = 951;
 let initialState = {
   players: {},
-  spawnPoints: [[100, 100], [baseWidth - 100, 100], [baseWidth / 3, 100], [2 * baseWidth / 3, 100]],
+  spawnPoints: [[100, 100], [baseWidth - 200, 100], [100, baseHeight - 200], [baseWidth - 200, baseHeight - 200]],
 
   walls: {
     "leftWall": {x: 0, y: 0, width: 50, height: baseHeight, skin: "grey"},
@@ -93,7 +92,7 @@ let initialState = {
       platform: true
     },
     "platform3": {
-      x: baseWidth / 2 - 200,
+      x: baseWidth / 2 - 150,
       y: baseHeight / 2 - 25,
       width: 300,
       height: 50,
@@ -128,7 +127,8 @@ export default class Room {
 
   join(socket, playerInfo) {
     socket.join(this.id);
-    this.world.players[socket.id] = new Player(socket.id, 100, 100, playerInfo.playerName, playerInfo.skin);
+    let spawnPoint = this.world.getSpawnPoint();
+    this.world.players[socket.id] = new Player(socket.id, spawnPoint[0], spawnPoint[1], playerInfo.playerName, playerInfo.skin);
     this.broadcast("connectedToRoom", {"id": this.id, "numConnected": this.getNumPlayers(), "roomSize": roomSize});
   }
 

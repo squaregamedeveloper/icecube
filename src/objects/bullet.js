@@ -4,10 +4,10 @@ export default class Bullet extends Rectangle{
   constructor(id, source, x, y, speed, color) {
     super(x, y, Bullet.size, Bullet.size);
 
-    this.rotationSpeed = 20;
+    this.rotationSpeed = -10;
     this.rotation = Math.random() * 180;
     this.speed = {x: 0, y: 0};
-    this.damage = 5;
+    this.damage = 1;
 
     this.id = id;
     this.source = source;
@@ -31,9 +31,14 @@ export default class Bullet extends Rectangle{
   };
 
   update(world){
-    this.x += this.speed.x * world.delta;
+    this.x += this.speed.x * world.delta ;
     this.y += this.speed.y * world.delta;
-    this.rotation -= this.rotationSpeed;
+    this.rotation -= this.rotationSpeed * world.delta;
+  };
+
+  updateState(state){
+    this.x = state.x;
+    this.y = state.y;
   };
 
   serialize(){

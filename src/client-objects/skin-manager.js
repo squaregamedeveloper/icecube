@@ -63,7 +63,6 @@ export default class SkinManager {
     Array.from(document.getElementsByClassName('skin')).forEach((element) => {
       element.addEventListener('click', (event) => {
         this.selectedSkin = parseInt(event.target.dataset.index);
-        console.log(this.selectedSkin);
         this.displayPlayerSkins();
       });
     });

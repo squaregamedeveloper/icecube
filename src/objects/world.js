@@ -57,14 +57,18 @@ export default class World {
     for (let player_id in this.players) {
       let player = this.players[player_id];
       // Reset player;
-      if (player.hp <= 0 && !this.client) {
-        this.spawnPointCounter = (this.spawnPointCounter + 1) % this.spawnPoints.length;
-        let spawnPoint = this.spawnPoints[this.spawnPointCounter];
+      if (player.health <= 0 && !this.client) {
+        let spawnPoint = this.getSpawnPoint();
         player.respawn(spawnPoint[0], spawnPoint[1]);
       }
       player.update(this);
     }
   };
+
+  getSpawnPoint(){
+    this.spawnPointCounter = (this.spawnPointCounter + 1) % this.spawnPoints.length;
+    return this.spawnPoints[this.spawnPointCounter];
+  }
 
   updatefragmentClusters() {
     for (let i = 0; i < this.fragmentClusters.length; i++) {
@@ -184,8 +188,10 @@ export default class World {
     //this.bullets = {};
     for (let bullet of state.bullets) {
       let {source, x, y, speed, color} = bullet;
+
       if (this.players[source]) {
-        this.bullets[bullet["id"]] = new Bullet(bullet["id"], source, x, y, speed, color)
+        if(!this.bullets[bullet.id]) this.bullets[bullet.id] = new Bullet(bullet.id, source, x, y, speed, color);
+        else this.bullets[bullet.id].updateState(bullet)
       } else {
         delete this.bullets[bullet["id"]];
       }

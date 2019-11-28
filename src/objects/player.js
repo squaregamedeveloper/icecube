@@ -6,7 +6,6 @@ const g = 0.5;  //TODO
 
 export default class Player extends Rectangle {
 
-
   constructor(id, x, y, name, skin) {
     let size = 50;
     super(x, y, size, size);
@@ -16,7 +15,8 @@ export default class Player extends Rectangle {
     this.friction = 0.9;
     this.speed = {x: 7, y: -15};
     this.jumpTimeout = null;
-    this.hp = 10;
+    this.maxHealth = 3;
+    this.health = this.maxHealth;
     this.bulletIndex = 0;
     this.score = 0;
     this.eyes = {x: 10, y: 10, size: 10, margin: 5};
@@ -37,10 +37,18 @@ export default class Player extends Rectangle {
 
   draw(ctx){
     // Draw the player name:
-    ctx.font = "12px Arial";
-    ctx.fillStyle = 'black';
-    let stringLen = this.name.length * 7;
-    ctx.fillText(this.name, this.x + (this.size / 2) - (stringLen / 2), this.y - 10);
+    ctx.font = "16px 'Jura'";
+    let stringLen = this.name.length * 9.5;
+    ctx.strokeStyle = 'black';
+    ctx.strokeText(this.name, this.x + (this.size / 2) - (stringLen / 2), this.y + this.size + 15);
+    ctx.fillStyle = 'white';
+    ctx.fillText(this.name, this.x + (this.size / 2) - (stringLen / 2), this.y + this.size + 15);
+
+    // Draw the health bar:
+    ctx.fillStyle = 'red';
+    ctx.fillRect(this.x, this.y - 10, this.width, 5);
+    ctx.fillStyle = '#00ff00';
+    ctx.fillRect(this.x, this.y - 10, (this.health / this.maxHealth) * this.width, 5);
 
     ctx.beginPath();
     ctx.fillStyle = SkinManager.playerSkins[this.skin].body;
@@ -139,8 +147,8 @@ export default class Player extends Rectangle {
   };
 
   takeDamage(damage) {
-    this.hp -= damage;
-    return this.hp;
+    this.health -= damage;
+    return this.health;
   };
 
   updateEyes() {
@@ -164,7 +172,7 @@ export default class Player extends Rectangle {
 
   respawn(x, y) {
     [this.x, this.y] = [x, y];
-    this.hp = 10;
+    this.health = this.maxHealth;
   };
 
   serialize() {
@@ -172,7 +180,7 @@ export default class Player extends Rectangle {
     res.id = this.id;
     res.x = this.x;
     res.y = this.y;
-    res.hp = this.hp;
+    res.hp = this.health;
     res.velocity = this.velocity;
     res.eyes = this.eyes;
     res.isOnGround = this.isOnGround;
@@ -192,7 +200,7 @@ export default class Player extends Rectangle {
     this.id = state.id;
     this.x = state.x;
     this.y = state.y;
-    this.hp = state.hp;
+    this.health = state.hp;
     this.velocity = state.velocity;
     this.eyes = state.eyes;
     this.isOnGround = state.isOnGround;
