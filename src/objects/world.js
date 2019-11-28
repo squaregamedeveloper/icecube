@@ -3,6 +3,7 @@ import Player from './player.js';
 import Bullet from "./bullet.js";
 import FragmentCluster from "./fragments.js"
 import Icicle from "./icicle.js";
+import {generateID} from "./utils.js";
 
 export default class World {
 
@@ -32,8 +33,8 @@ export default class World {
     }
 
     this.bullets = {};
+    this.icicles = {};
     this.fragmentClusters = [];
-    this.icicles = [];
   }
 
   reset() {
@@ -45,9 +46,13 @@ export default class World {
   };
 
   addIcicle() {
+    let id = generateID();
     let platforms = this.walls.filter(w => w.platform);
     let index = Math.floor(Math.random() * platforms.length);
-    this.icicles.push(new Icicle(platforms[index]));
+    let platform = platforms[index];
+    let y = platform.y + platform.height;
+    let x = Math.floor((Math.random() * (platform.width - 40))) + platform.x + 10;
+    this.icicles[id] = new Icicle(id, x, y);
 
     let randSpawnTime = Math.floor(Math.random() * 3000);
     setTimeout(() => this.addIcicle(), randSpawnTime);
@@ -88,7 +93,7 @@ export default class World {
       let intersection = this.intersectsWalls(b);
       if (intersection) {
         delete this.bullets[bulletID];
-        this.fragmentClusters.push(new FragmentCluster(b.x, b.y, intersection));
+        if(this.client) this.fragmentClusters.push(new FragmentCluster(b.x, b.y, intersection));
         break;
       }
 
@@ -101,7 +106,7 @@ export default class World {
             this.players[b.source].score++;
           }
           delete this.bullets[bulletID];
-          this.fragmentClusters.push(new FragmentCluster(b.x, b.y, intersects));
+          if(this.client) this.fragmentClusters.push(new FragmentCluster(b.x, b.y, intersects));
           break;
         }
       }
@@ -109,14 +114,25 @@ export default class World {
   };
 
   updateIcicles() {
-    for (let i = 0; i < this.icicles.length; i++) {
-      let icicle = this.icicles[i];
+    for (let icicleID in this.icicles) {
+      let icicle = this.icicles[icicleID];
       icicle.update(this);
       let intersects = this.intersectsWalls(icicle);
-      if (intersects) {
-        this.icicles.splice(i, 1);
-        i--;
-        this.fragmentClusters.push(new FragmentCluster(icicle.x, icicle.y+icicle.height, intersects, 30, 20));
+
+      // Destroy the icicle if it hits a platform:
+      if(intersects){
+        if(this.client) this.fragmentClusters.push(new FragmentCluster(icicle.x, icicle.y+icicle.height, intersects, 30, 20));
+        delete this.icicles[icicleID];
+      }
+
+      for (let id in this.players) {
+        let player = this.players[id];
+        let intersects = player.intersects(icicle);
+        if (intersects) {
+          player.takeDamage(icicle.damage);
+          delete this.icicles[icicleID];
+          if(this.client) this.fragmentClusters.push(new FragmentCluster(icicle.x, icicle.y, intersects));
+        }
       }
     }
   }
@@ -136,16 +152,18 @@ export default class World {
     this.lastUpdate = now;
 
     this.updateBulletsPosition();
-    this.updatefragmentClusters();
     this.updatePlayerPositions();
     this.updateIcicles();
+
+    // Handle fragments only on client side:
+    if(this.client) this.updatefragmentClusters();
   };
 
   draw(ctx) {
-    this.icicles.forEach((icicle) => icicle.draw(ctx));
     this.walls.forEach((w) => w.draw(ctx));
     this.fragmentClusters.forEach((fc) => fc.draw(ctx));
     for (let bulletID in this.bullets) this.bullets[bulletID].draw(ctx);
+    for (let icicleID in this.icicles) this.icicles[icicleID].draw(ctx);
     for (let player_id in this.players) this.players[player_id].draw(ctx);
   };
 
@@ -162,6 +180,7 @@ export default class World {
     let res = {
       "players": {},
       "bullets": [],
+      "icicles": [],
       "walls": [],
       "spawnPoints": [],
       "spawnPointCounter": this.spawnPointCounter
@@ -171,21 +190,24 @@ export default class World {
       for (let spawnPoint of this.spawnPoints) res["spawnPoints"].push(spawnPoint);
     }
     for (let bulletID in this.bullets) res["bullets"].push(this.bullets[bulletID].serialize());
+    for (let icicleID in this.icicles) res["icicles"].push(this.icicles[icicleID].serialize());
     for (let player_id in this.players) res["players"][player_id] = (this.players[player_id].serialize());
     return res;
   };
 
   updateState(state) {
+    // Update players (and delete them in case of player leave):
     for (let player_id in state['players']) {
       this.players[player_id].updateState(state['players'][player_id])
     }
+
     for (let player_id in this.players) {
       if (!(player_id in state['players'])) {
         delete this.players[player_id];
       }
     }
-    // TODO: Change bullet replacement to update
-    //this.bullets = {};
+
+    // Update bullets:
     for (let bullet of state.bullets) {
       let {source, x, y, speed, color} = bullet;
 
@@ -195,6 +217,12 @@ export default class World {
       } else {
         delete this.bullets[bullet["id"]];
       }
+    }
+
+    // Update icicles:
+    for (let icicle of state.icicles) {
+      let {id, x, y, width, height, isFalling, velocity} = icicle;
+      this.icicles[id] = new Icicle(id, x, y, width, height, isFalling, velocity);
     }
 
     // Update spawn points counter

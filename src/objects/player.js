@@ -173,6 +173,7 @@ export default class Player extends Rectangle {
   respawn(x, y) {
     [this.x, this.y] = [x, y];
     this.health = this.maxHealth;
+    //if(this.score > 0) this.score -= 1;
   };
 
   serialize() {

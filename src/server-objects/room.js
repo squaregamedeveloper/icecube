@@ -160,6 +160,8 @@ export default class Room {
     this.broadcast('startGame', this.world.serialize(true));
     this.world.reset();
     this.started = true;
+
+    setTimeout(() => this.world.addIcicle(), 1000);
     setInterval(() => this.update(), 15);
     setInterval(() => this.updateRemoteState(), 15);
   };

@@ -40,7 +40,6 @@ class Client{
       loader.style.display = "none";
       gameSection.style.display = 'block';
       this.world = new World(data, true);
-      setTimeout(() => this.world.addIcicle(), 1000);
       window.requestAnimationFrame(() => this.loop());
     });
 
